@@ -138,6 +138,10 @@ export default function Home() {
                         style={{ imageRendering: "pixelated" }}
                         src={project.image}
                         alt={project.name}
+                        layout="fill"
+                        objectFit="cover"
+                        objectPosition="center"
+                        unoptimized={true}
                     />
                     <div style={{ display: `${project.status === "coming soon" ? "block" : "none"}` }} className="absolute flex items-center justify-center bg-black bg-opacity-70 w-full h-full rounded-lg text-4xl">
                         <p className="text-slate-250 text-center pt-[20%]">coming soon...</p>
