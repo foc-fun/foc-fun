@@ -88,6 +88,7 @@ export default function Home() {
       >
           <Image
               src="/background/bottom.png"
+              alt="Background bottom"
               layout="responsive"
               width={1024}
               height={512}
@@ -108,7 +109,10 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
-                <div key={{index}} className="flex flex-col gap-2 p-0 rounded-lg transition-all duration-300 bg-[#00000000]">
+                <div
+                  key={index}
+                  className="flex flex-col gap-2 p-0 rounded-lg transition-all duration-300 bg-[#00000000]"
+                >
                 <a
                     href={project.url}
                     style={{ width: "300px" }}
@@ -129,7 +133,7 @@ export default function Home() {
                         playsInline
                         src={project.video}
                     />
-                    <img
+                    <Image
                         className="absolute w-full h-full object-cover rounded-lg"
                         style={{ imageRendering: "pixelated" }}
                         src={project.image}
