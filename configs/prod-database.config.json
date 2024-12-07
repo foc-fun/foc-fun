@@ -1,0 +1,13 @@
+{
+  "redis": {
+    "host": "redis.prod-foc-fun.svc.cluster.local",
+    "port": 6379
+  },
+  "postgres": {
+    "host": "postgres.prod-foc-fun.svc.cluster.local",
+    "port": 5432,
+    "user": "foc-fun-user",
+    "database": "foc-fun-db"
+  }
+}
+

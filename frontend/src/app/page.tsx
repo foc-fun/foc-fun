@@ -124,7 +124,7 @@ export default function Home() {
                 >
                     new!
                 </div>
-                <div className="relative w-full h-48">
+                <div className="relative w-full h-56">
                     <video
                         className="absolute w-full h-full object-cover rounded-lg"
                         autoPlay
