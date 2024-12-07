@@ -1,5 +1,10 @@
+'use client';
+
 import Image from "next/image";
 import localFont from '@next/font/local'
+import { useEffect, useState } from "react";
+
+import { fetchWrapper, devnetMode } from '../utils/apiService';
 
 const pixelsFont = localFont({
   src: [
@@ -15,7 +20,87 @@ const pixelsFont = localFont({
   variable: '--font-pixels'
 });
 
-export default function Home() {
+import { Chain, sepolia } from "@starknet-react/chains";
+import { StarknetConfig, starkscan } from "@starknet-react/core";
+import { RpcProvider } from "starknet";
+import ControllerConnector from "@cartridge/connector";
+import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+
+const ETH_TOKEN_ADDRESS =
+  "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
+
+function provider(_chain: Chain) {
+  return new RpcProvider({
+    nodeUrl: "https://api.cartridge.gg/x/starknet/sepolia",
+  });
+}
+
+const StarknetProvider = ({children}: {children: React.ReactNode}) => {
+  const connector = new ControllerConnector({
+    policies: [
+      {
+        target: ETH_TOKEN_ADDRESS,
+        method: "approve",
+        description:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      },
+      {
+        target: ETH_TOKEN_ADDRESS,
+        method: "transfer",
+      },
+      // Add more policies as needed
+    ],
+    rpc: "https://api.cartridge.gg/x/starknet/sepolia",
+    // Uncomment to use a custom theme
+    // theme: "dope-wars",
+    // colorMode: "light"
+  });
+
+  return (
+    <StarknetConfig
+      autoConnect
+      chains={[sepolia]}
+      connectors={[connector as any]}
+      explorer={starkscan}
+      provider={provider}
+    >
+      {children}
+    </StarknetConfig>
+  );
+}
+
+const App = () => {
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { address } = useAccount();
+  const connector = connectors[0] as unknown as ControllerConnector;
+
+  const [username, setUsername] = useState<string>();
+  const [queryAddress, setQueryAddress] = useState<string>();
+  useEffect(() => {
+    if (!address) return;
+    connector.username()?.then((n) => setUsername(n));
+  }, [address, connector]);
+
+  useEffect(() => {
+    const fetchGlobalData = async () => {
+      if (!address) return;
+      let newQueryAddress = "";
+      if (devnetMode) {
+        newQueryAddress = "0328ced46664355fc4b885ae7011af202313056a7e3d44827fb24c9d3206aaa0";
+      } else {
+        newQueryAddress = address.slice(2).toLowerCase().padStart(64, '0');
+      }
+      setQueryAddress(newQueryAddress);
+    }
+    fetchGlobalData();
+  }, [address]);
+
+  const doConnect = () => {
+    const conn = connector as any;
+    connect({ connector: conn });
+  }
+
   const projects = [
       {
           "name": "stonks",
@@ -38,13 +123,13 @@ export default function Home() {
           "status": "live",
       },
       {
-          "name": "Amalgam",
+          "name": "Chimera",
           "description": "Merge the elements, build the universe",
-          "url": "https://foc.fun/amalgam",
+          "url": "https://foc.fun/chimera",
           "genre": "game",
           "tags": ["game", "fun"],
-          "image": "/amalgam/preview.png",
-          "video": "/amalgam/preview.mp4",
+          "image": "/chimera/preview.png",
+          "video": "/chimera/preview.mp4",
           "status": "coming soon",
       },
       {
@@ -81,7 +166,44 @@ export default function Home() {
   ];
 
   return (
-    <div className={`grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-0 gap-8 ${pixelsFont.variable} font-sans`}>
+    <div className={`grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-0 gap-8 ${pixelsFont.variable} font-sans w-full`}>
+      <div
+          className="fixed top-0 right-0 w-full flex justify-end mx-8 my-4 gap-2"
+          style={{ zIndex: 10 }}
+      >
+           {address && (
+             <div className="flex flex-row gap-10 items-center">
+                 {username &&
+                     <div className="flex flex-row gap-2 items-center">
+                     <Image
+                         src="/icons/user.png"
+                         alt="User"
+                         width={20}
+                         height={20}
+                         className="py-3 px-0"
+                     />
+                     <p
+                         className="text-md text-slate-150 pt-2 mr-1 text-center"
+                     >
+                         {username}
+                     </p>
+                     </div>
+                 }
+             </div>
+           )}
+
+          <button
+              className="rounded-xl justify-center items-center px-2 pt-2
+              bg-gradient-to-br from-[#a021f6] to-[#7001c6] border-2 border-[#7001c6] rounded-full
+              text-slate-950 focus:outline-none shadow-sm transition duration-100 ease-in-out hover:scale-[103%] active:scale-[98%] hover:shadow-lg
+              hover:cursor-pointer duration-200"
+              onClick={() => {
+                address ? disconnect() : doConnect();
+              }}
+          >
+            {address ? "Logout" : "Login"}
+          </button>
+      </div>
       <div
           className="fixed bottom-0 left-0 w-full"
           style={{ zIndex: -2 }}
@@ -210,5 +332,13 @@ export default function Home() {
         </a>
       </footer>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <StarknetProvider>
+      <App />
+    </StarknetProvider>
   );
 }
