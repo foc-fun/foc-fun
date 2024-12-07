@@ -1,0 +1,25 @@
+FROM ubuntu:24.04
+
+# TODO: Auto update the versions from .tool-versions
+SHELL ["/bin/bash", "-c"]
+RUN apt-get update && apt-get install -y \
+curl jq git xxd yq bc
+RUN curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | bash -s -- -v 2.8.4
+RUN curl https://get.starkli.sh | bash
+RUN /bin/bash /root/.starkli/bin/starkliup
+RUN curl -L https://raw.githubusercontent.com/foundry-rs/starknet-foundry/master/scripts/install.sh | bash
+RUN /bin/bash /root/.local/bin/snfoundryup --version 0.32.0
+
+# TODO: build container?
+
+WORKDIR /configs
+COPY ./configs/ .
+
+WORKDIR /onchain
+COPY ./onchain .
+# TODO: Exclude target/...
+
+WORKDIR /scripts
+COPY ./onchain/scripts/ .
+
+CMD ["./initialize.sh"]
