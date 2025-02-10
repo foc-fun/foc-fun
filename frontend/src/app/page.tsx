@@ -54,9 +54,11 @@ const policies: SessionPolicies = {
 // Initialize the connector
 const connector = new ControllerConnector({
   policies,
-  url: 'https://api.cartridge.gg/x/starknet/sepolia',
-  chains: [{ rpcUrl: 'https://api.cartridge.gg/x/starknet/sepolia' }],
-  defaultChainId: constants.StarknetChainId.SN_SEPOLIA
+  chains: [
+      { rpcUrl: "https://api.cartridge.gg/x/starknet/sepolia" },
+      { rpcUrl: "https://api.cartridge.gg/x/starknet/mainnet" },
+  ],
+  defaultChainId: constants.StarknetChainId.SN_SEPOLIA,
 })
  
 // Configure RPC provider
