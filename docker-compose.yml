@@ -121,6 +121,7 @@ services:
       - configs:/app/src/configs
 
 volumes:
+  redis:
   postgres:
   devnet:
   apibara:

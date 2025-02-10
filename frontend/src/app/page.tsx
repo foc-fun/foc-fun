@@ -5,6 +5,7 @@ import localFont from '@next/font/local'
 import { useEffect, useState } from "react";
 
 import { fetchWrapper, devnetMode } from '../utils/apiService';
+import logo from './icon.png';
 
 const pixelsFont = localFont({
   src: [
@@ -20,60 +21,78 @@ const pixelsFont = localFont({
   variable: '--font-pixels'
 });
 
-import { Chain, sepolia } from "@starknet-react/chains";
-import { StarknetConfig, starkscan } from "@starknet-react/core";
-import { RpcProvider } from "starknet";
-import ControllerConnector from "@cartridge/connector";
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
-
+import { constants } from "starknet";
+import { sepolia, mainnet, Chain } from "@starknet-react/chains";
+import {
+  StarknetConfig,
+  jsonRpcProvider,
+  starkscan,
+} from "@starknet-react/core";
+import ControllerConnector from "@cartridge/connector/controller";
+import { SessionPolicies } from "@cartridge/controller";
+ 
+// Define your contract addresses
 const ETH_TOKEN_ADDRESS =
-  "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
-
-function provider(_chain: Chain) {
-  return new RpcProvider({
-    nodeUrl: "https://api.cartridge.gg/x/starknet/sepolia",
-  });
+  '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+ 
+// Define session policies
+const policies: SessionPolicies = {
+  contracts: {
+    [ETH_TOKEN_ADDRESS]: {
+      methods: [
+        {
+          name: "approve",
+          entrypoint: "approve",
+          description: "Approve spending of tokens",
+        },
+        { name: "transfer", entrypoint: "transfer" },
+      ],
+    },
+  },
 }
-
-const StarknetProvider = ({children}: {children: React.ReactNode}) => {
-  const connector = new ControllerConnector({
-    policies: [
-      {
-        target: ETH_TOKEN_ADDRESS,
-        method: "approve",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      },
-      {
-        target: ETH_TOKEN_ADDRESS,
-        method: "transfer",
-      },
-      // Add more policies as needed
-    ],
-    rpc: "https://api.cartridge.gg/x/starknet/sepolia",
-    // Uncomment to use a custom theme
-    // theme: "dope-wars",
-    // colorMode: "light"
-  });
-
+ 
+// Initialize the connector
+const connector = new ControllerConnector({
+  policies,
+  url: 'https://api.cartridge.gg/x/starknet/sepolia',
+  chains: [{ rpcUrl: 'https://api.cartridge.gg/x/starknet/sepolia' }],
+  defaultChainId: constants.StarknetChainId.SN_SEPOLIA
+})
+ 
+// Configure RPC provider
+const provider = jsonRpcProvider({
+  rpc: (chain: Chain) => {
+    switch (chain) {
+      case mainnet:
+        return { nodeUrl: 'https://api.cartridge.gg/x/starknet/mainnet' }
+      case sepolia:
+      default:
+        return { nodeUrl: 'https://api.cartridge.gg/x/starknet/sepolia' }
+    }
+  },
+})
+ 
+function StarknetProvider({ children }: { children: React.ReactNode }) {
   return (
     <StarknetConfig
       autoConnect
-      chains={[sepolia]}
-      connectors={[connector as any]}
-      explorer={starkscan}
+      chains={[mainnet, sepolia]}
       provider={provider}
+      connectors={[connector]}
+      explorer={starkscan}
     >
       {children}
     </StarknetConfig>
-  );
+  )
 }
+
+import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 
 const App = () => {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { address } = useAccount();
-  const connector = connectors[0] as unknown as ControllerConnector;
+  const controller = connectors[0] as ControllerConnector
 
   const [username, setUsername] = useState<string>();
   const [queryAddress, setQueryAddress] = useState<string>();
@@ -97,8 +116,7 @@ const App = () => {
   }, [address]);
 
   const doConnect = () => {
-    const conn = connector as any;
-    connect({ connector: conn });
+    connect({ connector: controller });
   }
 
   const projects = [
@@ -221,13 +239,22 @@ const App = () => {
           style={{ zIndex: -1 }}
       />
       <main className="flex flex-col gap-8 row-start-2 items-center justify-center">
-        <div className="flex flex-col gap-1 items-center justify-center">
-          <h1 className="text-7xl font-bold text-center justify-center tracking-wider">
-            foc.fun
-          </h1>
-          <p className="text-lg text-center sm:text-left">
-            games & projects...
-          </p>
+        <div className="relative h-36 flex items-center justify-center">
+          <div className="absolute left-0 w-28 h-28 translate-x-[-110%]">
+            <Image
+              src={logo}
+              alt="Logo"
+              layout="responsive"
+            />
+          </div>
+          <div className="flex flex-col gap-1 items-center justify-center relative">
+            <h1 className="text-7xl font-bold text-center justify-center tracking-wider">
+              foc.fun
+            </h1>
+            <p className="text-lg text-center sm:text-left">
+              games & projects...
+            </p>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
