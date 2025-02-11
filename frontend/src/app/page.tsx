@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import localFont from '@next/font/local'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { fetchWrapper, devnetMode } from '../utils/apiService';
 import logo from './icon.png';
@@ -34,6 +34,9 @@ import { SessionPolicies } from "@cartridge/controller";
 // Define your contract addresses
 const ETH_TOKEN_ADDRESS =
   '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+const ART_PEACE_ADDRESS =
+  '0x03ce937f91fa0c88a4023f582c729935a5366385091166a763e53281e45ac410'
  
 // Define session policies
 const policies: SessionPolicies = {
@@ -46,6 +49,15 @@ const policies: SessionPolicies = {
           description: "Approve spending of tokens",
         },
         { name: "transfer", entrypoint: "transfer" },
+      ],
+    },
+    [ART_PEACE_ADDRESS]: {
+      methods: [
+        {
+          name: "place_pixel",
+          entrypoint: "place_pixel",
+          description: "Place a pixel",
+        },
       ],
     },
   },
@@ -185,6 +197,39 @@ const App = () => {
       },
   ];
 
+  const [submitted, setSubmitted] = useState<boolean>(false)
+  const { account } = useAccount()
+  const [txnHash, setTxnHash] = useState<string>()
+  const placePixel = useCallback(
+    async () => {
+      if (!account) return
+      setSubmitted(true)
+      setTxnHash(undefined)
+      const position = Math.floor(Math.random() * 200000)
+      const unixNow = Math.floor(Date.now() / 1000)
+      try {
+        const calldata = [0, position, 1, unixNow]
+        console.log('Calldata:', calldata)
+        const result = await account.execute([
+          {
+            contractAddress: ART_PEACE_ADDRESS,
+            entrypoint: 'place_pixel',
+            calldata,
+          },
+        ])
+        setTxnHash(result.transaction_hash)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setSubmitted(false)
+      }
+    },
+    [account],
+  )
+  useEffect(() => {
+    console.log('Tx status:', submitted, txnHash)
+  }, [submitted, txnHash])
+
   return (
     <div className={`grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-0 gap-8 ${pixelsFont.variable} font-sans w-full`}>
       <div
@@ -212,6 +257,16 @@ const App = () => {
              </div>
            )}
 
+          <button className="rounded-xl justify-center items-center px-2 pt-2
+              bg-gradient-to-br from-[#a021f6] to-[#7001c6] border-2 border-[#7001c6] rounded-full
+              text-slate-950 focus:outline-none shadow-sm transition duration-100 ease-in-out hover:scale-[103%] active:scale-[98%] hover:shadow-lg
+              hover:cursor-pointer duration-200"
+              onClick={() => {
+                placePixel();
+              }}
+          >
+            Do Tx
+          </button>
           <button
               className="rounded-xl justify-center items-center px-2 pt-2
               bg-gradient-to-br from-[#a021f6] to-[#7001c6] border-2 border-[#7001c6] rounded-full
