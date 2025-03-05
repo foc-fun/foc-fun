@@ -3,7 +3,7 @@ import { NavLink } from "react-router";
 import logo from "../../app/icon.png";
 
 // TODO: Underline selected tab
-export const Header = (props: any) => {
+export const Header = (_props: any) => {
   return (
     <div
       className="fixed top-0 left-0 w-full flex justify-between items-center z-[100] py-2 px-6"

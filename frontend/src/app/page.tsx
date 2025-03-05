@@ -12,14 +12,16 @@ import Engine from "../components/screens/engine";
 const App = () => {
   return (
     <div className="h-[100vh] w-[100vw] relative">
-      <BrowserRouter>
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Play />} />
-          <Route path="/play" element={<Play />} />
-          <Route path="/engine" element={<Engine />} />
-        </Routes>
-      </BrowserRouter>
+      {typeof window !== "undefined" && (
+        <BrowserRouter>
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Play />} />
+            <Route path="/play" element={<Play />} />
+            <Route path="/engine" element={<Engine />} />
+          </Routes>
+        </BrowserRouter>
+      )}
       <div
           className="fixed bottom-0 left-0 w-full"
           style={{ zIndex: -2 }}

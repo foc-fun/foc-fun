@@ -5,7 +5,7 @@ import { ContractInput } from "./ContractInput";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
-import edit from "../../../public/icons/edit.png";
+// import edit from "../../../public/icons/edit.png";
 
 // TODO: no compiled_contract_class.json?
 // TODO: All spots null is returned, send err
@@ -17,7 +17,7 @@ import edit from "../../../public/icons/edit.png";
 //        - Check all inputs are filled & valid
 //        - Send to Registry w/ hash of all data & contract hash
 //        - Send to backend w/ hash of all data & contract hash
-export default function EngineDeploy(props: any) {
+export default function EngineDeploy(_props: any) {
   const sierraFileRef = useRef<HTMLInputElement>(null);
   const [sierraFile, setSierraFile] = useState<File | null>(null);
 
