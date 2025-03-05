@@ -1,0 +1,87 @@
+{
+  "primitives": [
+    {
+      "type": "core::byte_array::ByteArray",
+      "name": "string",
+      "color": "#3030d0"
+    },
+    {
+      "type": "core::integer::u8",
+      "name": "u8",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::u16",
+      "name": "u16",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::u32",
+      "name": "u32",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::u64",
+      "name": "u64",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::u128",
+      "name": "u128",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::u256",
+      "name": "u256",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::i8",
+      "name": "i8",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::i16",
+      "name": "i16",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::i32",
+      "name": "i32",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::i64",
+      "name": "i64",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::integer::i128",
+      "name": "i128",
+      "color": "#30d030"
+    },
+    {
+      "type": "core::bool",
+      "name": "bool",
+      "color": "#d03030"
+    },
+    {
+      "type": "core::starknet::contract_address::ContractAddress",
+      "name": "address",
+      "color": "#d03030"
+    }
+  ],
+  "array": [
+    {
+      "type": "core::array::Array",
+      "name": "array",
+      "color": "#3030d0"
+    },
+    {
+      "type": "core::span::Span",
+      "name": "span",
+      "color": "#3030d0"
+    }
+  ]
+}
+

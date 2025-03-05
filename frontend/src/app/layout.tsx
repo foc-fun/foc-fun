@@ -2,20 +2,23 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const lightPixel7 = localFont({
+  src: [
+    {
+      path: "../../public/fonts/light-pixel-7/light_pixel-7.ttf",
+      weight: "400"
+    },
+    {
+      path: "../../public/fonts/light-pixel-7/light_pixel-7.ttf",
+      weight: "700"
+    }
+  ],
+  variable: "--font-pixels"
 });
 
 export const metadata: Metadata = {
   title: "foc.fun",
-  description: "games & projects..."
+  description: "Starknet App Engine"
 };
 
 export default function RootLayout({
@@ -26,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${lightPixel7.variable} font-sans antialiased`}
       >
         {children}
       </body>

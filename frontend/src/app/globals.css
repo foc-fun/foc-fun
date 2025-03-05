@@ -5,6 +5,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --primary: #a021f6;
+  --primary-dark: #7001c6;
+
+  --secondary: #21f6a0;
+  --secondary-dark: #01c670;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,7 +20,26 @@
   }
 }
 
+@font-face {
+  font-family: 'Light-Pixel';
+  src:
+    local('Light-Pixel'),
+    url('../../public/fonts/light-pixel-7/light_pixel-7.ttf') format('truetype');
+}
+
+html {
+  height: 100%;
+  font-size: 62.5%;
+}
+
 body {
+  margin: 0;
+  font-family: 'Light-Pixel', sans-serif;
+  font-size: 1.6rem;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
   color: var(--foreground);
   background: var(--background);
   background-image: url('/background/main.png');
@@ -23,8 +48,142 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+  font-family: 'Light-Pixel', sans-serif;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.Button__like {
+  border: 2px solid #000000a0;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.Button__primary {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--primary),
+    var(--primary-dark)
+  );
+  border: 2px solid var(--primary-dark);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+  color: var(--background);
+
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.Button__primary:hover {
+  transform: translateY(-0.1rem) scale(1.03);
+  box-shadow: 0 0 1rem 0.4rem var(--background);
+}
+
+.Button__primary:active {
+  transform: translateY(0rem) scale(0.97);
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+}
+
+.Button__secondary {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--secondary),
+    var(--secondary-dark)
+  );
+  border: 2px solid var(--secondary-dark);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+  color: var(--background);
+
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.Button__secondary:hover {
+  transform: translateY(-0.1rem) scale(1.03);
+  box-shadow: 0 0 1rem 0.4rem var(--background);
+}
+
+.Button__secondary:active {
+  transform: translateY(0rem) scale(0.97);
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+}
+
+.Button__empty {
+  background: none;
+  color: var(--foreground);
+
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.Button__empty:hover {
+  transform: translateY(-0.1rem) scale(1.03);
+  text-decoration: underline;
+}
+
+.Button__empty:active {
+  transform: translateY(0rem) scale(0.97);
+}
+
+.Form__input {
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.5)
+  );
+  border: 2px dashed var(--foreground);
+  border-radius: 1rem;
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+  position: relative;
+  opacity: 0.85;
+}
+
+.Form__file {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.Form__image:hover {
+   text-decoration: underline;
+}
+
+.Form__text {
+  background: none;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.5)
+  );
+  border: 2px solid var(--foreground);
+  border-radius: 1rem;
+  box-shadow: 0 0 0.5rem 0.1rem var(--background);
+
+  transition: all 0.2s;
+}
+
+.Form__text::placeholder {
+  overflow: visible;
+  opacity: 0.3;
+}
+
+.Form__text:focus {
+  outline: none;
+  transform: translateY(-0.1rem) scale(1.03);
 }
