@@ -10,7 +10,6 @@ WORKDIR /app
 COPY ./frontend/package.json ./frontend/pnpm-lock.yaml ./
 RUN pnpm install
 COPY ./frontend ./
-COPY ./configs/docker-backend.config.json ./src/configs/backend.config.json
 
 SHELL ["/bin/bash", "-c"]
 # Clear the entrypoint

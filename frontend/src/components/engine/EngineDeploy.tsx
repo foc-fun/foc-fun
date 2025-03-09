@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
+import { useAccount } from "@starknet-react/core";
 
 import { ContractInput } from "./ContractInput";
+import { declareContract } from "../../contract/calls";
+import { registerClassCall, deployContractCall } from "../../contract/registry";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
@@ -17,22 +20,37 @@ import uploaded from "../../../public/icons/uploaded.png";
 //        - Check all inputs are filled & valid
 //        - Send to Registry w/ hash of all data & contract hash
 //        - Send to backend w/ hash of all data & contract hash
+// TODO: Voyager links on class hash & contract address
+// TODO: Shorten class hash & contract address & add copy button
 export default function EngineDeploy(_props: any) {
-  const sierraFileRef = useRef<HTMLInputElement>(null);
-  const [sierraFile, setSierraFile] = useState<File | null>(null);
+  const { account } = useAccount();
+  const contractClassRef = useRef<HTMLInputElement>(null);
+  const compiledContractRef = useRef<HTMLInputElement>(null);
+  const [contractClassFile, setContractClassFile] = useState<File | null>(null);
+  const [compiledContractFile, setCompiledContractFile] = useState<File | null>(null);
 
+  const [contractClassData, setContractClassData] = useState<any | null>(null);
+  const [compiledContractData, setCompiledContractData] = useState<any | null>(null);
   const [contractAbi, setContractAbi] = useState<any[]>([]);
   const [constructorInputs, setConstructorInputs] = useState<any[]>([]);
-  const handleSierraFileChange = (e: any) => {
+  const handleContractClassFileChange = (e: any) => {
     if (!e.target) return;
     const file = e.target.files[0];
-    setSierraFile(file);
+    console.log("Handling contract class file change...");
+    setContractClassFile(file);
+  }
+  const handleCompiledContractFileChange = (e: any) => {
+    if (!e.target) return;
+    const file = e.target.files[0];
+    console.log("Handling compiled contract file change...");
+    setCompiledContractFile(file);
   }
   useEffect(() => {
     // Parse the file
-    if (!sierraFile) return;
-    sierraFile.text().then((text) => {
-      const jsonData = JSON.parse(text);
+    if (!contractClassFile) return;
+    contractClassFile.text().then((text) => {
+      const jsonData = JSON.parse(text.toString());
+      setContractClassData(jsonData);
       if (!jsonData.abi || jsonData.abi.length === 0) return;
       const abi = jsonData.abi;
       setContractAbi(abi);
@@ -40,47 +58,109 @@ export default function EngineDeploy(_props: any) {
       if (!constructorInputs) return;
       setConstructorInputs(constructorInputs);
     });
-  }, [sierraFile]);
+  }, [contractClassFile]);
+  useEffect(() => {
+    // Parse the file
+    if (!compiledContractFile) return;
+    compiledContractFile.text().then((text) => {
+      const jsonData = JSON.parse(text.toString());
+      setCompiledContractData(jsonData);
+    });
+  }, [compiledContractFile]);
 
   const handleFileDragOver = (e: any) => {
     e.preventDefault();
+  }
+
+  const compileDeployCallData = (): any[] => {
+    // TODO: Compile the call data from input fields
+    return [42];
+  }
+
+  const [deployDone, setDeployDone] = useState<boolean>(false);
+  const [deployedContractClassHash, setDeployedContractClassHash] = useState<string | null>(null);
+  const [deployedContractAddress, setDeployedContractAddress] = useState<string | null>(null);
+  const [contractClassName, setContractClassName] = useState<string>("");
+  const [contractClassVersion, setContractClassVersion] = useState<string>("v0.0.0");
+  const deploy = async () => {
+    console.log("Declaring & Deploying contract...");
+    setDeployDone(false);
+    const callData = compileDeployCallData();
+    const classHash = await declareContract(account, contractClassData, compiledContractData);
+    // TODO: multicall
+    await registerClassCall(account, classHash, contractClassName, contractClassVersion);
+    await deployContractCall(account, classHash, callData);
+    setDeployedContractClassHash(classHash);
+    setDeployedContractAddress("TODO");
+    setDeployDone(true);
   }
 
   return (
     <div className="w-full h-full flex flex-col items-center">
       <h1 className="text-[3.2rem] m-8">Starknet Contract Deployer</h1>
       <div className="w-full flex-grow flex flex-row items-center p-[2rem] gap-[2rem]">
-        <div className="Form__input h-[50%] w-[30%]">
+        <div className="h-full w-[30%] gap-[2rem] flex flex-col">
+          <div className="h-[40%] Form__input">
           <label
             className="Form__file"
-            htmlFor="file"
-            onDrop={handleSierraFileChange}
+            htmlFor="file-contract"
+            onDrop={handleContractClassFileChange}
             onDragOver={handleFileDragOver}
           >
-            {sierraFile ? (
+            {contractClassFile ? (
               <div className="flex flex-col items-center justify-center w-full h-full gap-1 relative overflow-hidden">
                 <Image src={uploaded} alt="Uploaded" className="w-[10rem] h-[10rem] m-6" />
-                <p className="text-[2rem] text-center p-[1rem] pb-0">Sierra Contract Uploaded</p>
-                <p className="text-[1.2rem] text-center p-0">Filename: {sierraFile.name}</p>
+                <p className="text-[2rem] text-center p-[1rem] pb-0">Contract Uploaded</p>
+                <p className="text-[1.2rem] text-center p-0">Filename: {contractClassFile.name}</p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                 <Image src={upload} alt="Upload" className="w-[10rem] h-[10rem] m-6" />
-                <p className="text-[2rem] text-center p-[2rem] pb-0">Upload a Sierra `.contract_class.json`</p>
+                <p className="text-[2rem] text-center p-[2rem] pb-0">Upload a `.contract_class.json`</p>
               </div>
             )}
           </label>
           <input
             type="file"
-            id="file"
+            id="file-contract"
             accept="contract_class.json"
-            ref={sierraFileRef}
+            ref={contractClassRef}
             style={{ display: "none" }}
-            onChange={handleSierraFileChange}
+            onChange={handleContractClassFileChange}
           />
         </div>
+        <div className="h-[40%] Form__input">
+          <label
+            className="Form__file"
+            htmlFor="file-compiled"
+            onDrop={handleCompiledContractFileChange}
+            onDragOver={handleFileDragOver}
+          >
+            {compiledContractFile ? (
+              <div className="flex flex-col items-center justify-center w-full h-full gap-1 relative overflow-hidden">
+                <Image src={uploaded} alt="Uploaded" className="w-[10rem] h-[10rem] m-6" />
+                <p className="text-[2rem] text-center p-[1rem] pb-0">Compiled Contract Uploaded</p>
+                <p className="text-[1.2rem] text-center p-0">Filename: {compiledContractFile.name}</p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center w-full h-full gap-1">
+                <Image src={upload} alt="Upload" className="w-[10rem] h-[10rem] m-6" />
+                <p className="text-[2rem] text-center p-[2rem] pb-0">Upload a `.compiled_contract.json`</p>
+              </div>
+            )}
+          </label>
+          <input
+            type="file"
+            id="file-compiled"
+            accept="compiled_contract.json"
+            ref={compiledContractRef}
+            style={{ display: "none" }}
+            onChange={handleCompiledContractFileChange}
+          />
+        </div>
+        </div>
         <div className="flex flex-col w-[70%] justify-center">
-          {sierraFile ? (
+          {contractClassFile ? (
             <div>
               <div className="flex flex-row items-center gap-2">
                 <h2 className="text-[2.4rem]">Deployment Config :</h2>
@@ -89,6 +169,7 @@ export default function EngineDeploy(_props: any) {
                   type="text"
                   id="contractName"
                   placeholder="Contract Name"
+                  onChange={(e) => setContractClassName(e.target.value)}
                 />
               </div>
               {constructorInputs && constructorInputs.length > 0 && (
@@ -103,16 +184,27 @@ export default function EngineDeploy(_props: any) {
                 </div>
               )}
               <div className="flex flex-row">
-                <button className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem]">Deploy</button>
+                <button
+                  className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem]"
+                  onClick={deploy}
+                >
+                  Deploy
+                </button>
                 <button className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem] ml-[1rem]">Save</button>
                 <button className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem] ml-[1rem]">Load</button>
               </div>
             </div>
           ) : (
-            <h2 className="text-[3rem] text-center">Upload a Sierra Contract to get started.</h2>
+            <h2 className="text-[3rem] text-center">Upload a Contract to get started.</h2>
           )}
         </div>
       </div>
+      {deployDone && (
+        <div className="flex flex-row items-center gap-2">
+          <p className="text-[2rem]">Class Hash: {deployedContractClassHash}</p>
+          <p className="text-[2rem]">Contract Address: {deployedContractAddress}</p>
+        </div>
+      )}
     </div>
   );
 }

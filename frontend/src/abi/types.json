@@ -6,6 +6,11 @@
       "color": "#3030d0"
     },
     {
+      "type": "core::felt252",
+      "name": "felt",
+      "color": "#30d030"
+    },
+    {
       "type": "core::integer::u8",
       "name": "u8",
       "color": "#30d030"

@@ -1,0 +1,23 @@
+Api:
+  Host: foc-fun-backend-1
+  Port: 8080
+  AllowOrigins:
+    - '*'
+  AllowMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  AllowHeaders:
+    - Content-Type
+  Production: false
+  Admin: true
+Consumer:
+  Host: foc-fun-consumer-1
+  Port: 8081
+Postgres:
+  Host: foc-fun-postgres-1
+  Port: 5432
+  User: foc-fun-user
+  Name: foc-fun-db

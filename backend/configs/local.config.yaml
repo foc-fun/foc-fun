@@ -1,0 +1,23 @@
+Api:
+  Host: localhost
+  Port: 8080
+  AllowOrigins:
+    - '*'
+  AllowMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  AllowHeaders:
+    - Content-Type
+  Production: false
+  Admin: true
+Consumer:
+  Host: localhost
+  Port: 8081
+Postgres:
+  Host: localhost
+  Port: 5432
+  User: foc-fun-user
+  Name: foc-fun-db

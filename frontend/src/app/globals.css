@@ -5,12 +5,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --light: #a5a5a580;
+  --lighter: #a9a9a980;
 
   --primary: #a021f6;
   --primary-dark: #7001c6;
 
   --secondary: #21f6a0;
   --secondary-dark: #01c670;
+
+  --tertiary: #f6a021;
+  --tertiary-dark: #c67001;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -57,6 +62,42 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.Background--none {
+  background: none !important;
+}
+
+.Background--light {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--light),
+    var(--lighter)
+  );
+}
+
+.Background--primary {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--primary),
+    var(--primary-dark)
+  );
+}
+
+.Background--secondary {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--secondary),
+    var(--secondary-dark)
+  );
+}
+
+.Background--tertiary {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--tertiary),
+    var(--tertiary-dark)
+  );
 }
 
 .Button__like {

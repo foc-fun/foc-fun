@@ -1,0 +1,86 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:7.2.4-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server
+    volumes:
+      - redis:/data
+  postgres:
+    image: postgres:14.11-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./backend/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=foc-fun-user
+      - POSTGRES_DB=foc-fun-db
+  backend:
+    build:
+      dockerfile: backend/Dockerfile
+      context: .
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=password
+      - CONFIG_PATH=/configs/config.yaml
+  consumer:
+    build:
+      dockerfile: backend/Dockerfile.consumer
+      context: .
+    ports:
+      - 8081:8081
+    links:
+      - redis
+      - postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=password
+      - CONFIG_PATH=/configs/config.yaml
+      - REGISTRY_CONTRACT_ADDRESS=0x079babba1534a9adb94857a4d29ef98e08526a9268efdb0640a7593f26a93b1d
+  indexer:
+    build:
+      dockerfile: indexer/Dockerfile
+      context: .
+    links:
+      - backend
+    environment:
+      - REGISTRY_CONTRACT_ADDRESS=0x079babba1534a9adb94857a4d29ef98e08526a9268efdb0640a7593f26a93b1d
+      - AUTH_TOKEN=${APIBARA_AUTH_TOKEN}
+      - CONSUMER_TARGET_URL=http://foc-fun-consumer-1:8081/consume-indexer-msg
+      - APIBARA_STREAM_URL=https://sepolia.starknet.a5a.ch
+      - PERSIST_TO_REDIS=redis://foc-fun-redis-1:6379
+      - INDEXER_ID=foc-fun-indexer-id
+    restart: on-failure
+    depends_on:
+      - consumer
+  frontend:
+    build:
+      dockerfile: frontend/Dockerfile
+      context: .
+    ports:
+      - 3000:3000
+    links:
+      - backend
+    environment:
+      - NEXT_PUBLIC_REGISTRY_CONTRACT_ADDRESS=0x079babba1534a9adb94857a4d29ef98e08526a9268efdb0640a7593f26a93b1d
+    volumes:
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./frontend/pnpm-workspace.yaml:/app/pnpm-workspace.yaml
+      - ./frontend/public/:/app/public
+      - ./frontend/src:/app/src
+
+volumes:
+  redis:
+  postgres:

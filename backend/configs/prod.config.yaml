@@ -1,0 +1,23 @@
+Api:
+  Host: backend.foc-fun-main.svc.cluster.local
+  Port: 8080
+  AllowOrigins:
+    - '*'
+  AllowMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  AllowHeaders:
+    - Content-Type
+  Production: true
+  Admin: true
+Consumer:
+  Host: consumer.foc-fun-main.svc.cluster.local
+  Port: 8081
+Postgres:
+  Host: foc-fun.foc-fun-main.svc.cluster.local
+  Port: 5432
+  User: foc-fun-user
+  Name: foc-fun-db

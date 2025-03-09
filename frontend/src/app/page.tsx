@@ -8,6 +8,7 @@ import { StarknetProvider } from "../components/StarknetProvider";
 import { Header } from "../components/header/header";
 import Play from "../components/screens/play";
 import Engine from "../components/screens/engine";
+import Login from "../components/screens/login";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
             <Route path="/" element={<Play />} />
             <Route path="/play" element={<Play />} />
             <Route path="/engine" element={<Engine />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </BrowserRouter>
       )}

@@ -3,7 +3,7 @@ import { sepolia, mainnet, Chain } from "@starknet-react/chains";
 import {
   StarknetConfig,
   jsonRpcProvider,
-  starkscan,
+  voyager,
   useInjectedConnectors,
   argent,
   braavos,
@@ -82,11 +82,11 @@ const controllerConnector = new ControllerConnector({
       { rpcUrl: SEPOLIA_RPC_URL },
       { rpcUrl: MAINNET_RPC_URL },
   ],
-  defaultChainId: constants.StarknetChainId.SN_MAIN,
+  defaultChainId: constants.StarknetChainId.SN_SEPOLIA
 })
 
 // Configure RPC provider
-const provider = jsonRpcProvider({
+export const provider = jsonRpcProvider({
   rpc: (chain: Chain) => {
     switch (chain) {
       case mainnet:
@@ -114,17 +114,17 @@ export function StarknetProvider({ children }: { children: React.ReactNode }) {
     options: {
         dappName: "art/peace",
         url: typeof location !== "undefined" ? location.hostname : "localhost",
-        chainId: "SN_MAIN" as any,
+        chainId: "SN_SEPOLIA" as any,
         icons: [],
       },
     });
   return (
     <StarknetConfig
       autoConnect
-      chains={[mainnet]}
+      chains={[sepolia, mainnet]}
       provider={provider}
       connectors={[controllerConnector, ...connectors, mobileConnector, new WebWalletConnector()]}
-      explorer={starkscan}
+      explorer={voyager}
     >
       {children}
     </StarknetConfig>

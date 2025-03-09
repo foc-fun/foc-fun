@@ -3,6 +3,7 @@
 import { useState } from "react";
 import EngineAPI from "../engine/EngineAPI";
 import EngineDeploy from "../engine/EngineDeploy";
+import EngineInvoke from "../engine/EngineInvoke";
 import EngineIndex from "../engine/EngineIndex";
 import EngineInspect from "../engine/EngineInspect";
 
@@ -18,15 +19,15 @@ const Engine = () => {
     },
     {
       name: "Invoke",
-      component: <EngineDeploy />,
-    },
-    {
-      name: "Index",
-      component: <EngineIndex />,
+      component: <EngineInvoke />,
     },
     {
       name: "Inspect",
       component: <EngineInspect />,
+    },
+    {
+      name: "Index",
+      component: <EngineIndex />,
     },
     {
       name: "Pipelines",
