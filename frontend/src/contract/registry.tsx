@@ -19,8 +19,8 @@ const feltString = (string: string): string => {
   // Read utf-8 string into a hex string
   let hex = "";
   for (let i = 0; i < string.length; i++) {
-    let code = string.charCodeAt(i);
-    let hexChar = code.toString(16);
+    const code = string.charCodeAt(i);
+    const hexChar = code.toString(16);
     hex += hexChar;
   }
   return "0x" + hex;

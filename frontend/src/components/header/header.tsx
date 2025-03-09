@@ -20,7 +20,7 @@ export const Header = (_props: any) => {
     } else {
       controller.username()?.then((n) => setUsername(n));
     }
-  }, [address]);
+  }, [address, connector]);
 
   return (
     <div

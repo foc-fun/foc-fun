@@ -81,7 +81,7 @@ export default function EngineDeploy(_props: any) {
   const [deployedContractClassHash, setDeployedContractClassHash] = useState<string | null>(null);
   const [deployedContractAddress, setDeployedContractAddress] = useState<string | null>(null);
   const [contractClassName, setContractClassName] = useState<string>("");
-  const [contractClassVersion, setContractClassVersion] = useState<string>("v0.0.0");
+  const [contractClassVersion, _setContractClassVersion] = useState<string>("v0.0.0");
   const deploy = async () => {
     console.log("Declaring & Deploying contract...");
     setDeployDone(false);

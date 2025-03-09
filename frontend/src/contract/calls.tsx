@@ -1,4 +1,4 @@
-import { DeclareContractPayload, DeclareAndDeployContractPayload, extractContractHashes, CompiledContract } from "starknet";
+import { DeclareContractPayload, DeclareAndDeployContractPayload, extractContractHashes } from "starknet";
 import { sepolia } from "@starknet-react/chains";
 import { provider } from "../components/StarknetProvider";
 
@@ -12,12 +12,12 @@ export const declareDeployContract = async (account: any, contractData: any, com
     // setSubmitted(true);
     // setTxHash("");
     /*
-    let declarePayload: DeclareContractPayload = {
+    const declarePayload: DeclareContractPayload = {
       contract: contractData,
       casm: compiledContractData,
     };
     */
-    let deployDeclarePayload: DeclareAndDeployContractPayload = {
+    const deployDeclarePayload: DeclareAndDeployContractPayload = {
       contract: contractData,
       casm: compiledContractData,
       constructorCalldata: calldata,
@@ -30,7 +30,7 @@ export const declareDeployContract = async (account: any, contractData: any, com
       console.error("Provider not found");
       return { classHash: "", contractAddress: "" };
     }
-    let declareContractPayload = extractContractHashes(deployDeclarePayload);
+    const declareContractPayload = extractContractHashes(deployDeclarePayload);
     const isDeclared = await innerProvider.isClassDeclared(declareContractPayload);
     if (!isDeclared) {
       console.log("Declaring & Deploying contract...");
@@ -69,7 +69,7 @@ export const declareContract = async (account: any, contractData: any, compiledC
       casm: compiledContractData,
     };
     */
-    let declarePayload: DeclareContractPayload = {
+    const declarePayload: DeclareContractPayload = {
       contract: contractData,
       casm: compiledContractData,
     };
