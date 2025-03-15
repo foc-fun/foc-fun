@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.labels.consumer.name }}
+spec:
+  replicas: {{ .Values.deployments.consumer.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.labels.consumer.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.labels.consumer.name }}
+    spec:
+      containers:
+        - name: {{ .Values.labels.consumer.name }}
+          image: {{ .Values.deployments.consumer.image }}:{{ .Chart.AppVersion }}-{{ .Values.deployments.sha }}
+          command: ["./consumer"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.ports.consumer }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.labels.consumer.name }}-secret

@@ -1,0 +1,34 @@
+cd onchain
+scarb build
+deploy foc-fun registry to sepolia ( use foc.fun Engine )
+  save address
+
+build prod docker images w/ new version & push to docker hub
+   Update docker version in infra/foc-fun-infra/Chart.yaml if needed
+   Update contracts in values.yaml
+   commit and merge changes
+   make docker-build
+   make docker-push
+
+apply changes to cloud
+   cloud console
+   clone / pull latest
+   If full reset
+     make helm-uninstall
+     POSTGRES_PASSWORD=test AUTH_TOKEN=dna_abc make helm-install
+  else
+     POSTGRES_PASSWORD=test AUTH_TOKEN=dna_abc make helm-upgrade
+
+  kubectl cp backend/postgres/init.sql pod:/home
+    kubectl exec -it pod/pod-name bash
+    psql -U foc-fun-user -d foc-fun-db -f /home/init.sql
+
+    kubectl delete pvc redis-volume-claim
+    kubectl delete deployment.apps/redis
+    kubectl delete deployment.apps/indexer
+    POSTGRES_PASSWORD=test AUTH_TOKEN=dna_abc make helm-upgrade
+
+change frontend contract addresses/configs in vercel
+  NEXT_PUBLIC_REGISTRY_CONTRACT_ADDRESS
+Redepoloy vercel FE
+
