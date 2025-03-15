@@ -47,14 +47,14 @@ helm-uninstall:
 helm-install:
 	$(eval COMMIT_SHA := $(shell git rev-parse --short HEAD))
 	@echo "Installing helm chart..."
-	helm install --set postgres.password=$(POSTGRES_PASSWORD) --set deployments.sha=$(COMMIT_SHA) --set apibara.authToken=$(AUTH_TOKEN) foc-fun-infra packages/infra
+	helm install --set postgres.password=$(POSTGRES_PASSWORD) --set deployments.sha=$(COMMIT_SHA) --set apibara.authToken=$(AUTH_TOKEN) foc-fun-infra infra/foc-fun-infra
 
 helm-template:
 	$(eval COMMIT_SHA := $(shell git rev-parse --short HEAD))
 	@echo "Rendering helm chart..."
-	helm template --set postgres.password=$(POSTGRES_PASSWORD) --set deployments.sha=$(COMMIT_SHA) --set apibara.authToken=$(AUTH_TOKEN) foc-fun-infra packages/infra
+	helm template --set postgres.password=$(POSTGRES_PASSWORD) --set deployments.sha=$(COMMIT_SHA) --set apibara.authToken=$(AUTH_TOKEN) foc-fun-infra infra/foc-fun-infra
 
 helm-upgrade:
 	$(eval COMMIT_SHA := $(shell git rev-parse --short HEAD))
 	@echo "Upgrading helm chart..."
-	helm upgrade --set postgres.password=$(POSTGRES_PASSWORD) --set deployments.sha=$(COMMIT_SHA) --set apibara.authToken=$(AUTH_TOKEN) foc-fun-infra packages/infra
+	helm upgrade --set postgres.password=$(POSTGRES_PASSWORD) --set deployments.sha=$(COMMIT_SHA) --set apibara.authToken=$(AUTH_TOKEN) foc-fun-infra infra/foc-fun-infra
