@@ -39,3 +39,12 @@ CREATE TABLE IF NOT EXISTS RegisteredEvents (
   event_id INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS RegisteredEvents_event_id ON RegisteredEvents (event_id);
+
+CREATE TABLE IF NOT EXISTS ProcessedEvents (
+  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  event_id INTEGER NOT NULL,
+  keys text[] NOT NULL,
+  data text[] NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ProcessedEvents_event_id ON ProcessedEvents (event_id);
+CREATE INDEX IF NOT EXISTS ProcessedEvents_keys ON ProcessedEvents USING GIN (keys);

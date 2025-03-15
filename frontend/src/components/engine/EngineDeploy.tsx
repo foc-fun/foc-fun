@@ -1,10 +1,11 @@
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { useAccount } from "@starknet-react/core";
+import { hash } from "starknet";
 
 import { ContractInput } from "./ContractInput";
 import { declareContract } from "../../contract/calls";
-import { registerClassCall, deployContractCall } from "../../contract/registry";
+import { registerDeployMultiCall, registerClassCall, deployContractCall, registerEventsCall } from "../../contract/registry";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
@@ -87,12 +88,68 @@ export default function EngineDeploy(_props: any) {
     setDeployDone(false);
     const callData = compileDeployCallData();
     const classHash = await declareContract(account, contractClassData, compiledContractData);
-    // TODO: multicall
-    await registerClassCall(account, classHash, contractClassName, contractClassVersion);
-    await deployContractCall(account, classHash, callData);
+    console.log("Class Hash: ", classHash);
     setDeployedContractClassHash(classHash);
-    setDeployedContractAddress("TODO");
+    // TODO: multicall
+    /*
+    await registerClassCall(account, classHash, contractClassName, contractClassVersion);
+    console.log("Registered class hash with registry");
+    await deployContractCall(account, classHash, callData);
+    console.log("Deployed contract with registry");
+    */
+    const multiTxHash = await registerDeployMultiCall(account, classHash, contractClassName, contractClassVersion, callData);
+    console.log("Registered deploy with registry", multiTxHash);
+    if (!account) return;
+    let res = null;
+    let attempts = 0;
+    while (!res && attempts < 5) {
+      // Try the above call till it returns a receipt ( it fails if the tx is not mined yet )
+      console.log("Waiting for receipt...");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      try {
+        res = await account.getTransactionReceipt(multiTxHash) as any;
+      } catch (err) {
+        console.log("Error getting transaction receipt: ", err);
+      }
+      attempts++;
+    }
+    console.log("Transaction receipt: ", res);
+    const deployedEvent = "0x206ba27d5bbda42a63e108ee1ac7a6455c197ee34cd40a268e61b06f78dbc9a";
+    if (!res || !res.events) {
+      console.log("No receipt found");
+      return;
+    }
+    const deployedEventData = res.events.find((event: any) => event.keys[0] === deployedEvent);
+    if (!deployedEventData) {
+      console.log("No deployed event found");
+      return;
+    }
+    const contractAddress = deployedEventData.keys[1];
+    setDeployedContractAddress(contractAddress);
     setDeployDone(true);
+  }
+  // TODO: Register events before deploying the contract
+  const registerEvents = async () => {
+    if (!deployedContractAddress) return;
+
+    // Get all events to register
+    const eventsData = contractAbi.find((item: any) => item.type === "event" &&
+      item.name.endsWith("::Event"));
+    if (!eventsData) return;
+    const eventsToRegister = eventsData.variants.map((event: any) => {
+      return hash.getSelectorFromName(event.name);
+    });
+    console.log("Events to register: ", deployedContractAddress, eventsToRegister);
+
+    // Register each event
+    await registerEventsCall(account, deployedContractAddress, eventsToRegister);
+  }
+  useEffect(() => {
+    registerEvents();
+  }, [deployedContractAddress]);
+
+  const saveDeployment = async () => {
+    console.log(contractAbi);
   }
 
   return (
@@ -145,14 +202,14 @@ export default function EngineDeploy(_props: any) {
             ) : (
               <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                 <Image src={upload} alt="Upload" className="w-[10rem] h-[10rem] m-6" />
-                <p className="text-[2rem] text-center p-[2rem] pb-0">Upload a `.compiled_contract.json`</p>
+                <p className="text-[2rem] text-center p-[2rem] pb-0">Upload a `.compiled_contract_class.json`</p>
               </div>
             )}
           </label>
           <input
             type="file"
             id="file-compiled"
-            accept="compiled_contract.json"
+            accept="compiled_contract_class.json"
             ref={compiledContractRef}
             style={{ display: "none" }}
             onChange={handleCompiledContractFileChange}
@@ -190,7 +247,7 @@ export default function EngineDeploy(_props: any) {
                 >
                   Deploy
                 </button>
-                <button className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem] ml-[1rem]">Save</button>
+                <button className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem] ml-[1rem]" onClick={saveDeployment}>Save</button>
                 <button className="Button__secondary px-[1rem] py-[0.5rem] pt-[1rem] mt-[1rem] ml-[1rem]">Load</button>
               </div>
             </div>

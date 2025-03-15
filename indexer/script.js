@@ -6,6 +6,7 @@ export const config = {
   network: "starknet",
   finality: "DATA_STATUS_PENDING",
   filter: {
+    header: { weak: true },
     events: [
       {
         fromAddress: Deno.env.get("REGISTRY_CONTRACT_ADDRESS"),
@@ -74,6 +75,39 @@ export const config = {
     targetUrl: Deno.env.get("CONSUMER_TARGET_URL")
   }
 };
+
+export function factory(block) {
+  const newFilters = block.events.map(event => {
+    if (event.event.keys[0] !== "0x00b76210508ae32b1edabae03977822391fd60465414b2ddbdafbebd1f0240f8") {
+      // Filter out events that are not Event Registered
+      return null;
+    }
+    if (event.event.data) {
+      return [
+        {
+          fromAddress: event.event.data[0],
+          keys: [
+            event.event.data[1]
+          ],
+          includeReverted: false,
+          includeTransaction: false,
+          includeReceipt: false
+        }
+      ];
+    }
+    return null;
+  })
+  .filter(filters => filters !== null)
+  .flat();
+
+  const allFilters = config.filter.events.concat(newFilters);
+  return {
+    filter: newFilters.length > 0 ? {
+      header: { weak: true },
+      events: allFilters,
+    } : config.filter,
+  };
+}
 
 export default function transform(block) {
   return block;

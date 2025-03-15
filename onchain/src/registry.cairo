@@ -14,7 +14,7 @@ pub trait IFocRegistry<TContractState> {
     fn get_contract(
         self: @TContractState, contract_address: ContractAddress
     ) -> FocRegistry::ContractMetadata;
-    fn deploy_contract(ref self: TContractState, class_hash: ClassHash, calldata: Span<felt252>);
+    fn deploy_contract(ref self: TContractState, class_hash: ClassHash, calldata: Span<felt252>) -> ContractAddress;
     fn register_contract(
         ref self: TContractState,
         contract_address: ContractAddress,
@@ -151,7 +151,7 @@ pub mod FocRegistry {
 
         fn deploy_contract(
             ref self: ContractState, class_hash: ClassHash, calldata: Span<felt252>
-        ) {
+        ) -> ContractAddress {
             // TODO: salt
             let deploy_res = deploy_syscall(class_hash, 0, calldata, false);
             if deploy_res.is_err() {
@@ -159,6 +159,7 @@ pub mod FocRegistry {
             }
             let (addr, _response) = deploy_res.unwrap();
             self.register_contract(addr, ContractMetadata { class_hash: class_hash });
+            addr
         }
 
         fn register_contract(

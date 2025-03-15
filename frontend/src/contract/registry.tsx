@@ -86,6 +86,7 @@ export const deployContractCall = async (account: any, contractHash: string, cal
     }
 
     const innerCalldata = [contractHash, calldata.length, ...calldata];
+    console.log("Deploying contract: ", account, contractHash, calldata);
     printCalldata(innerCalldata);
     const result = await account.execute([
       {
@@ -94,11 +95,48 @@ export const deployContractCall = async (account: any, contractHash: string, cal
         calldata: innerCalldata
       }
     ]);
-    console.log("Tx hash: ", result.transaction_hash);
+    console.log("Tx hash: ", result.transaction_hash, result);
   } catch (e) {
     console.error("Error: ", e);
   } finally {
     console.log("Done");
+  }
+}
+
+export const registerDeployMultiCall = async (account: any, classHash: string, className: string, classVersion: string, calldata: string[]):
+  Promise<any> => {
+  let txHash = "";
+  try {
+    if (!account) {
+      console.error("Account is not connected");
+      return null;
+    }
+
+    const innerCalldata1 = [classHash, feltString(className), feltString(classVersion)];
+    const innerCalldata2 = [classHash, calldata.length, ...calldata];
+    console.log("Registering deploy multi: ", account, classHash, className, classVersion, calldata);
+    printCalldata(innerCalldata1);
+    printCalldata(innerCalldata2);
+    const result = await account.execute([
+      {
+        contractAddress: REGISTRY_CONTRACT_ADDRESS,
+        entrypoint: "register_class",
+        calldata: innerCalldata1
+      },
+      {
+        contractAddress: REGISTRY_CONTRACT_ADDRESS,
+        entrypoint: "deploy_contract",
+        calldata: innerCalldata2
+      }
+    ]);
+    txHash = result.transaction_hash;
+    console.log("Tx hash: ", result.transaction_hash, result);
+  } catch (e) {
+    console.error("Error: ", e);
+    return null;
+  } finally {
+    console.log("Done");
+    return txHash;
   }
 }
 
@@ -177,6 +215,32 @@ export const registerEventCall = async (account: any, contractAddress: string, e
   }
 }
 
+export const registerEventsCall = async (account: any, contractAddress: string, eventSelectors: string[]):
+  Promise<any> => {
+  try {
+    if (!account) {
+      console.error("Account is not connected");
+      return null;
+    }
+
+    const executeData = eventSelectors.map((selector) => {
+      return {
+        contractAddress: REGISTRY_CONTRACT_ADDRESS,
+        entrypoint: "register_event",
+        calldata: [contractAddress, selector]
+      }
+    });
+    console.log("Registering events: ", account, executeData);
+    const result = await account.execute([
+      ...executeData
+    ]);
+    console.log("Tx hash: ", result.transaction_hash);
+  } catch (e) {
+    console.error("Error: ", e);
+  } finally {
+    console.log("Done");
+  }
+}
 export const unregisterEventCall = async (account: any, eventId: string):
   Promise<any> => {
   try {

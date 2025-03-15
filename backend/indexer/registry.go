@@ -143,33 +143,42 @@ func processEventRegisteredEvent(event IndexerEventWithTransaction) {
 		return
 	}
 
-	_, err = db.Db.Postgres.Exec(context.Background(), "INSERT INTO registeredevents (id) VALUES ($1)", eventId)
+	_, err = db.Db.Postgres.Exec(context.Background(), "INSERT INTO registeredevents (event_id) VALUES ($1)", eventId)
 	if err != nil {
 		PrintIndexerEventError("processEventRegisteredEvent", event, err)
 		return
 	}
+
+	RegisterEventMemory(int(eventId), contractAddressHex, eventSelectorHex)
 }
 
 func revertEventRegisteredEvent(event IndexerEventWithTransaction) {
 	eventIdHex := event.Event.Keys[1]
-
-	_, err := db.Db.Postgres.Exec(context.Background(), "DELETE FROM events WHERE id = $1", eventIdHex)
+	eventId, err := strconv.ParseInt(eventIdHex, 0, 64)
 	if err != nil {
 		PrintIndexerEventError("revertEventRegisteredEvent", event, err)
 		return
 	}
 
-	_, err = db.Db.Postgres.Exec(context.Background(), "DELETE FROM registeredevents WHERE id = $1", eventIdHex)
+	_, err = db.Db.Postgres.Exec(context.Background(), "DELETE FROM events WHERE id = $1", eventId)
 	if err != nil {
 		PrintIndexerEventError("revertEventRegisteredEvent", event, err)
 		return
 	}
+
+	_, err = db.Db.Postgres.Exec(context.Background(), "DELETE FROM registeredevents WHERE event_id = $1", eventId)
+	if err != nil {
+		PrintIndexerEventError("revertEventRegisteredEvent", event, err)
+		return
+	}
+
+	UnregisterEventMemory(int(eventId), event.Event.Data[0], event.Event.Data[1])
 }
 
 func processEventUnregisteredEvent(event IndexerEventWithTransaction) {
 	eventIdHex := event.Event.Keys[1]
 
-	_, err := db.Db.Postgres.Exec(context.Background(), "DELETE FROM registeredevents WHERE id = $1", eventIdHex)
+	_, err := db.Db.Postgres.Exec(context.Background(), "DELETE FROM registeredevents WHERE event_id = $1", eventIdHex)
 	if err != nil {
 		PrintIndexerEventError("processEventUnregisteredEvent", event, err)
 		return
@@ -179,7 +188,7 @@ func processEventUnregisteredEvent(event IndexerEventWithTransaction) {
 func revertEventUnregisteredEvent(event IndexerEventWithTransaction) {
 	eventIdHex := event.Event.Keys[1]
 
-	_, err := db.Db.Postgres.Exec(context.Background(), "INSERT INTO registeredevents (id) VALUES ($1)", eventIdHex)
+	_, err := db.Db.Postgres.Exec(context.Background(), "INSERT INTO registeredevents (event_id) VALUES ($1)", eventIdHex)
 	if err != nil {
 		PrintIndexerEventError("revertEventUnregisteredEvent", event, err)
 		return

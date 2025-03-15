@@ -112,7 +112,7 @@ export function StarknetProvider({ children }: { children: React.ReactNode }) {
   });
   const mobileConnector = ArgentMobileConnector.init({
     options: {
-        dappName: "art/peace",
+        dappName: "foc.fun",
         url: typeof location !== "undefined" ? location.hostname : "localhost",
         chainId: "SN_SEPOLIA" as any,
         icons: [],

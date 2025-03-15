@@ -17,4 +17,5 @@ func InitRoutes() {
 	// Base route needed for health checks
 	InitBaseRoutes()
 	InitRegistryRoutes()
+	InitEventsRoutes()
 }

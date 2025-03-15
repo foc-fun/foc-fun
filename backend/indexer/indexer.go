@@ -95,6 +95,32 @@ const (
 	eventUnregisteredEvent    = "0x011623d02d5b80848a6a356e327cf4904e3b610faaf26f7e1d38c31cfd180632"
 )
 
+type RegisteredEvent struct {
+	Id              int
+	ContractAddress string
+	EventSelector   string
+}
+
+var RegistedEvents = []RegisteredEvent{}
+
+func RegisterEventMemory(id int, contractAddress string, eventSelector string) {
+	RegistedEvents = append(RegistedEvents, RegisteredEvent{
+		Id:              id,
+		ContractAddress: "0x" + contractAddress,
+		EventSelector:   "0x" + eventSelector,
+	})
+}
+
+// TODO: Use map instead of slice for faster lookups
+func UnregisterEventMemory(id int, contractAddress string, eventSelector string) {
+	for idx, regEvent := range RegistedEvents {
+		if regEvent.Id == id && regEvent.ContractAddress == "0x"+contractAddress && regEvent.EventSelector == "0x"+eventSelector {
+			RegistedEvents = append(RegistedEvents[:idx], RegistedEvents[idx+1:]...)
+			break
+		}
+	}
+}
+
 var eventProcessors = map[string](func(IndexerEventWithTransaction)){
 	classRegisteredEvent:      processClassRegisteredEvent,
 	classUnregisteredEvent:    processClassUnregisteredEvent,
@@ -196,11 +222,15 @@ func ProcessMessageEvents(message IndexerMessage) {
 	for _, event := range message.Data.Batch[0].Events {
 		eventKey := event.Event.Keys[0]
 		eventProcessor, ok := eventProcessors[eventKey]
-		if !ok {
-			PrintIndexerError("consumeIndexerMsg", "error processing event", eventKey)
-			return
+		if ok {
+			eventProcessor(event)
 		}
-		eventProcessor(event)
+
+		for _, regEvent := range RegistedEvents {
+			if regEvent.ContractAddress == event.Event.FromAddress && regEvent.EventSelector == eventKey {
+				processEvent(regEvent.Id, event)
+			}
+		}
 	}
 }
 
@@ -253,11 +283,15 @@ func processMessageEventsWithReverter(oldMessage IndexerMessage, newMessage Inde
 			if eventRequiresOrdering[eventKey] {
 				// Revert event
 				eventReverter, ok := eventReverters[eventKey]
-				if !ok {
-					PrintIndexerError("consumeIndexerMsg", "error reverting event", eventKey)
-					return
+				if ok {
+					eventReverter(oldMessage.Data.Batch[0].Events[idx])
 				}
-				eventReverter(oldMessage.Data.Batch[0].Events[idx])
+
+				for _, regEvent := range RegistedEvents {
+					if regEvent.ContractAddress == oldMessage.Data.Batch[0].Events[idx].Event.FromAddress && regEvent.EventSelector == eventKey {
+						revertProcessEvent(regEvent.Id, oldMessage.Data.Batch[0].Events[idx])
+					}
+				}
 			} else {
 				unorderedEvents = append(unorderedEvents, oldMessage.Data.Batch[0].Events[idx])
 			}
@@ -284,22 +318,30 @@ func processMessageEventsWithReverter(oldMessage IndexerMessage, newMessage Inde
 		}
 
 		eventProcessor, ok := eventProcessors[eventKey]
-		if !ok {
-			PrintIndexerError("consumeIndexerMsg", "error processing event", eventKey)
-			return
+		if ok {
+			eventProcessor(newMessage.Data.Batch[0].Events[idx])
 		}
-		eventProcessor(newMessage.Data.Batch[0].Events[idx])
+
+		for _, regEvent := range RegistedEvents {
+			if regEvent.ContractAddress == newMessage.Data.Batch[0].Events[idx].Event.FromAddress && regEvent.EventSelector == eventKey {
+				processEvent(regEvent.Id, newMessage.Data.Batch[0].Events[idx])
+			}
+		}
 	}
 
 	// Revert remaining unordered events
 	for _, unorderedEvent := range unorderedEvents {
 		eventKey := unorderedEvent.Event.Keys[0]
 		eventReverter, ok := eventReverters[eventKey]
-		if !ok {
-			PrintIndexerError("consumeIndexerMsg", "error reverting event", eventKey)
-			return
+		if ok {
+			eventReverter(unorderedEvent)
 		}
-		eventReverter(unorderedEvent)
+
+		for _, regEvent := range RegistedEvents {
+			if regEvent.ContractAddress == unorderedEvent.Event.FromAddress && regEvent.EventSelector == eventKey {
+				revertProcessEvent(regEvent.Id, unorderedEvent)
+			}
+		}
 	}
 }
 
@@ -362,6 +404,7 @@ func TryProcessPendingMessage() bool {
 }
 
 func StartMessageProcessor() {
+	// TODO: Init RegistedEvents from DB
 	// Goroutine to process pending/accepted messages
 	go func() {
 		for {
