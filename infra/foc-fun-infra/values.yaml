@@ -48,7 +48,7 @@ deployments:
 
 postgres:
   db: foc-fun-db
-  user: foc-funuser
+  user: foc-fun-user
   password: FocFunPassword1234
 
 apibara:

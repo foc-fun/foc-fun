@@ -27,8 +27,8 @@ pub mod BasicContract {
 
     #[constructor]
     fn constructor(ref self: ContractState, initial_value: felt252) {
-        self.value.write(initial_value + 24);
-        self.emit(ValueChanged { old_value: 310, new_value: initial_value, });
+        self.value.write(initial_value + 25);
+        self.emit(ValueChanged { old_value: 320, new_value: initial_value, });
     }
 
     #[abi(embed_v0)]
