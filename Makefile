@@ -26,8 +26,6 @@ docker-build:
 	docker build . -f backend/Dockerfile.prod -t "brandonjroberts/foc-fun-backend:$(APP_VERSION)-$(COMMIT_SHA)"
 	@echo "Building consumer..."
 	docker build . -f backend/Dockerfile.consumer.prod -t "brandonjroberts/foc-fun-consumer:$(APP_VERSION)-$(COMMIT_SHA)"
-	@echo "Building inscriber..."
-	docker build . -f backend/Dockerfile.inscriber.prod -t "brandonjroberts/foc-fun-inscriber:$(APP_VERSION)-$(COMMIT_SHA)"
 	@echo "Building indexer..."	
 	docker build . -f indexer/Dockerfile.prod -t "brandonjroberts/foc-fun-indexer:$(APP_VERSION)-$(COMMIT_SHA)"
 
@@ -37,16 +35,10 @@ docker-push:
 	@echo "Pushing docker images with version $(APP_VERSION)-$(COMMIT_SHA)"
 	@echo "Pushing backend..."
 	docker push "brandonjroberts/foc-fun-backend:$(APP_VERSION)-$(COMMIT_SHA)"
-	@echo "Pushing websockets..."
-	docker push "brandonjroberts/foc-fun-websockets:$(APP_VERSION)-$(COMMIT_SHA)"
 	@echo "Pushing consumer..."
 	docker push "brandonjroberts/foc-fun-consumer:$(APP_VERSION)-$(COMMIT_SHA)"
-	@echo "Pushing inscriber..."
-	docker push "brandonjroberts/foc-fun-inscriber:$(APP_VERSION)-$(COMMIT_SHA)"
 	@echo "Pushing indexer..."
 	docker push "brandonjroberts/foc-fun-indexer:$(APP_VERSION)-$(COMMIT_SHA)"
-	@echo "Pushing regtest update..."
-	docker push "brandonjroberts/foc-fun-regtest-update:$(APP_VERSION)-$(COMMIT_SHA)"
 
 helm-uninstall:
 	@echo "Uninstalling helm chart..."
