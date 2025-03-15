@@ -1,5 +1,5 @@
 Api:
-  Host: backend.foc-fun-main.svc.cluster.local
+  Host: backend.foc-fun-sepolia.svc.cluster.local
   Port: 8080
   AllowOrigins:
     - '*'
@@ -14,10 +14,10 @@ Api:
   Production: true
   Admin: true
 Consumer:
-  Host: consumer.foc-fun-main.svc.cluster.local
+  Host: consumer.foc-fun-sepolia.svc.cluster.local
   Port: 8081
 Postgres:
-  Host: foc-fun.foc-fun-main.svc.cluster.local
+  Host: foc-fun.foc-fun-sepolia.svc.cluster.local
   Port: 5432
   User: foc-fun-user
   Name: foc-fun-db

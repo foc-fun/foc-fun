@@ -7,3 +7,4 @@ metadata:
 data:
   FOC_FUN_REGISTRY_CONTRACT: {{ .Values.contracts.focFunRegistryContract }}
   POSTGRES_PASSWORD: {{ .Values.postgres.password }}
+  CONFIG_PATH: /configs/config.yaml
