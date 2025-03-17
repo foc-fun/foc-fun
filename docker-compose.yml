@@ -47,7 +47,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=password
       - CONFIG_PATH=/configs/config.yaml
-      - FOC_FUN_REGISTRY_CONTRACT=0x079babba1534a9adb94857a4d29ef98e08526a9268efdb0640a7593f26a93b1d
+      - FOC_FUN_REGISTRY_CONTRACT=0x06c28e3b1442ea866c0a29b2094e76983a6260d5e54216a5d12cdd676f65a6e5
   indexer:
     build:
       dockerfile: indexer/Dockerfile
@@ -55,7 +55,7 @@ services:
     links:
       - backend
     environment:
-      - FOC_FUN_REGISTRY_CONTRACT=0x079babba1534a9adb94857a4d29ef98e08526a9268efdb0640a7593f26a93b1d
+      - FOC_FUN_REGISTRY_CONTRACT=0x06c28e3b1442ea866c0a29b2094e76983a6260d5e54216a5d12cdd676f65a6e5
       - AUTH_TOKEN=${APIBARA_AUTH_TOKEN}
       - CONSUMER_TARGET_URL=http://foc-fun-consumer-1:8081/consume-indexer-msg
       - APIBARA_STREAM_URL=https://sepolia.starknet.a5a.ch
@@ -73,7 +73,7 @@ services:
     links:
       - backend
     environment:
-      - NEXT_PUBLIC_REGISTRY_CONTRACT_ADDRESS=0x079babba1534a9adb94857a4d29ef98e08526a9268efdb0640a7593f26a93b1d
+      - NEXT_PUBLIC_REGISTRY_CONTRACT_ADDRESS=0x06c28e3b1442ea866c0a29b2094e76983a6260d5e54216a5d12cdd676f65a6e5
     volumes:
       - ./frontend/package.json:/app/package.json
       - ./frontend/pnpm-lock.yaml:/app/pnpm-lock.yaml

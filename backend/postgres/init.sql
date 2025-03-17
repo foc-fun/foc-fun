@@ -48,3 +48,4 @@ CREATE TABLE IF NOT EXISTS ProcessedEvents (
 );
 CREATE INDEX IF NOT EXISTS ProcessedEvents_event_id ON ProcessedEvents (event_id);
 CREATE INDEX IF NOT EXISTS ProcessedEvents_keys ON ProcessedEvents USING GIN (keys);
+CREATE INDEX IF NOT EXISTS ProcessedEvents_data ON ProcessedEvents USING GIN (data);

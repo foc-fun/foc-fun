@@ -82,7 +82,7 @@ export const declareContract = async (account: any, contractData: any, compiledC
       return "";
     }
     // TODO: Check if contract is already declared
-    console.log("Declaring contract...");
+    console.log("Declaring contract...", declarePayload);
     const result = await account.declare(declarePayload);
     console.log("Result:", result);
     const classHash = result.class_hash;

@@ -12,6 +12,7 @@ func InitRegistryRoutes() {
 	http.HandleFunc("/registry/get-registered-classes", GetRegisteredClasses)
 	http.HandleFunc("/registry/get-registered-contracts", GetRegisteredContracts)
 	http.HandleFunc("/registry/get-registered-events", GetRegisteredEvents)
+	http.HandleFunc("/registry/get-contracts-events", GetContractsEvents)
 }
 
 type RegistryClass struct {
@@ -100,4 +101,34 @@ func GetRegisteredEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	routeutils.WriteDataJson(w, string(events))
+}
+
+type RegistryContractEvent struct {
+	Id              int    `json:"id"`
+	ContractAddress string `json:"contractAddress"`
+	Selector        string `json:"selector"`
+	ClassHash       string `json:"classHash"`
+}
+
+func GetContractsEvents(w http.ResponseWriter, r *http.Request) {
+	pageLength, err := strconv.Atoi(r.URL.Query().Get("pageLength"))
+	if err != nil || pageLength < 1 {
+		pageLength = 10
+	}
+	if pageLength > 30 {
+		pageLength = 30
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	offset := (page - 1) * pageLength
+
+	query := "Select events.*, contracts.class_hash from events RIGHT JOIN registeredcontracts ON events.contract_address = registeredcontracts.address LIMIT $1 OFFSET $2"
+	contractsEvents, err := db.PostgresQueryJson[RegistryContractEvent](query, pageLength, offset)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error getting registered contracts events")
+		return
+	}
+	routeutils.WriteDataJson(w, string(contractsEvents))
 }
