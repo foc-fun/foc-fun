@@ -8,7 +8,7 @@ const printCalldata = (calldata: any) => {
   console.log(str);
 }
 
-const feltString = (string: string): string => {
+export const feltString = (string: string): string => {
   if (!string) {
     return "0x0";
   }
@@ -129,6 +129,9 @@ export const registerDeployMultiCall = async (account: any, classHash: string, c
         calldata: innerCalldata2
       }
     ]);
+    console.log({
+      result
+    })
     txHash = result.transaction_hash;
     console.log("Tx hash: ", result.transaction_hash, result);
   } catch (e) {

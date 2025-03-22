@@ -54,7 +54,7 @@ export const declareDeployContract = async (account: any, contractData: any, com
   };
 }
 
-export const declareContract = async (account: any, contractData: any, compiledContractData: any):
+export const declareContract = async (account: any, contractData: any, compiledContractData: any, setDeployDone: any):
   Promise<{ classHash: string, contract: any, casm: any, compiledClassHash: any }> => {
   try {
     if (!account) {
@@ -90,6 +90,7 @@ export const declareContract = async (account: any, contractData: any, compiledC
 
     if (!isDeclared) {
       console.log("Declaring contract...");
+      setDeployDone("declaring");
       const result = await account.declare(testDeclarePayload);
       console.log("Result:", result);
       const classHash = result.class_hash;

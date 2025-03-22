@@ -1,14 +1,15 @@
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { useAccount } from "@starknet-react/core";
+import { useAccount, useProvider } from "@starknet-react/core";
 
 import { ContractInput } from "./ContractInput";
 import { declareContract } from "../../contract/calls";
-import { registerClassCall, registerEventsCall } from "../../contract/registry";
+import { feltString, registerClassCall, registerDeployMultiCall, registerEventsCall } from "../../contract/registry";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
-import { extractContractHashes, hash } from "starknet";
+import { extractConContract, tractHashes, hash, Contract, extractContractHashes, json } from "starknet";
+import { REGISTRY_CONTRACT_ADDRESS } from "../../../constants";
 // import edit from "../../../public/icons/edit.png";
 
 // TODO: no compiled_contract_class.json?
@@ -78,11 +79,34 @@ export default function EngineDeploy(_props: any) {
     return [42];
   }
 
+  const isClassRegistered = async (provider: any, classHash: string) => {
+    const { abi } = await provider.getClassAt(REGISTRY_CONTRACT_ADDRESS);
+    if (abi === undefined) {
+      console.log("No registry contract abi found.")
+    }
+    const contract = new Contract(json.parse(abi), REGISTRY_CONTRACT_ADDRESS, provider);
+    const get_class = await contract.get_class(classHash);
+    console.log({
+      get_class
+    })
+    return !((feltString(get_class?.name) === "0x0") && (feltString(get_class?.version) === "0x0"))
+  }
+
+  const isContractDeployed = async (provider: any, contractAddress: string) => {
+    try {
+      const result = await provider.getClassAt(contractAddress);
+      return result !== undefined;
+    } catch (error) {
+      return false;
+    }
+  }
+
   const [deployDone, setDeployDone] = useState<"registering" | "declaring" | "deploying" | "deployed" | undefined>(undefined);
   const [deployedContractClassHash, setDeployedContractClassHash] = useState<string | null>(null);
   const [deployedContractAddress, setDeployedContractAddress] = useState<string | null>(null);
   const [contractClassName, setContractClassName] = useState<string>("");
   const [contractClassVersion, _setContractClassVersion] = useState<string>("v0.0.0");
+  const { provider } = useProvider();
   const deploy = async () => {
     console.log("Declaring & Deploying contract...");
     const testDeclarePayload = {
@@ -91,18 +115,25 @@ export default function EngineDeploy(_props: any) {
     };
     const builtDeclarePayload = await account?.buildDeclarePayload(testDeclarePayload, { skipValidate: true });
     testDeclarePayload.contract.abi = builtDeclarePayload.contract.abi;
-    const extractedData = extractContractHashes(testDeclarePayload);
-    setDeployDone("registering");
-    await registerClassCall(account, extractedData?.classHash, contractClassName, contractClassVersion);
-    setDeployDone("declaring");
-    const { classHash } = await declareContract(account, contractClassData, compiledContractData);
-    setDeployDone("deploying");
-    const deploy = await account?.deploy({
-      classHash,
-      constructorCalldata: compileDeployCallData()
+    const { classHash } = await declareContract(account, contractClassData, compiledContractData, setDeployDone);
+    const classRegistered = await isClassRegistered(provider, classHash);
+    console.log({
+      classRegistered,
+      classHash
     })
+    if (!classRegistered) {
+      setDeployDone("registering");
+      await registerClassCall(account, classHash, contractClassName, contractClassVersion);
+    }
+    const calldata = compileDeployCallData()
+    const contractAddress = hash.calculateContractAddressFromHash("0", classHash, calldata, REGISTRY_CONTRACT_ADDRESS);
+    const deployed = await isContractDeployed(provider, contractAddress)
+    if (!deployed) {
+      setDeployDone("deploying");
+      await registerDeployMultiCall(account, classHash, contractClassName, contractClassVersion, calldata);
+    }
+    setDeployedContractAddress(contractAddress);
     setDeployedContractClassHash(classHash);
-    setDeployedContractAddress(deploy?.contract_address[0] || "");
     setDeployDone("deployed");
   }
   // TODO: Register events before deploying the contract
