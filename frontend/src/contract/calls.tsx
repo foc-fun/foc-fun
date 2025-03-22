@@ -54,7 +54,7 @@ export const declareDeployContract = async (account: any, contractData: any, com
   };
 }
 
-export const declareContract = async (account: any, contractData: any, compiledContractData: any, setDeployDone: any):
+export const declareContract = async (account: any, contractData: any, compiledContractData: any, setDeployDone?: any):
   Promise<{ classHash: string, contract: any, casm: any, compiledClassHash: any }> => {
   try {
     if (!account) {
