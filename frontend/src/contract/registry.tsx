@@ -218,7 +218,7 @@ export const registerEventCall = async (account: any, contractAddress: string, e
   }
 }
 
-export const registerEventsCall = async (account: any, contractAddress: string, eventSelectors: string[]):
+export const registerContractAndEventsCall = async (account: any, contractAddress: string, classHash: string, eventSelectors: string[]):
   Promise<any> => {
   try {
     if (!account) {
@@ -235,6 +235,11 @@ export const registerEventsCall = async (account: any, contractAddress: string, 
     });
     console.log("Registering events: ", account, executeData);
     const result = await account.execute([
+      {
+        contractAddress: REGISTRY_CONTRACT_ADDRESS,
+        entrypoint: "register_contract",
+        calldata: [contractAddress, classHash]
+      },
       ...executeData
     ]);
     console.log("Tx hash: ", result.transaction_hash);

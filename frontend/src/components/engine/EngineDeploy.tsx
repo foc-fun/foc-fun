@@ -4,7 +4,7 @@ import { useAccount, useProvider } from "@starknet-react/core";
 
 import { ContractInput } from "./ContractInput";
 import { declareContract } from "../../contract/calls";
-import { feltString, registerClassCall, registerDeployMultiCall, registerEventsCall } from "../../contract/registry";
+import { feltString, registerClassCall, registerDeployMultiCall, registerContractAndEventsCall } from "../../contract/registry";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
@@ -150,7 +150,7 @@ export default function EngineDeploy(_props: any) {
     console.log("Events to register: ", deployedContractAddress, eventsToRegister);
 
     // Register each event
-    await registerEventsCall(account, deployedContractAddress, eventsToRegister);
+    await registerContractAndEventsCall(account, deployedContractAddress, deployedContractClassHash || "", eventsToRegister);
   }
   useEffect(() => {
     registerEvents();
