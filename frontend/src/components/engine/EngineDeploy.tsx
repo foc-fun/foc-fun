@@ -8,7 +8,7 @@ import { registerDeployMultiCall, registerClassCall, deployContractCall, registe
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
-import { CallData, extractContractHashes, hash, json } from "starknet";
+import { CallData, DeclareContractPayload, extractContractHashes, hash, json } from "starknet";
 // import edit from "../../../public/icons/edit.png";
 
 // TODO: no compiled_contract_class.json?
@@ -24,7 +24,7 @@ import { CallData, extractContractHashes, hash, json } from "starknet";
 // TODO: Voyager links on class hash & contract address
 // TODO: Shorten class hash & contract address & add copy button
 export default function EngineDeploy(_props: any) {
-  const { account, status } = useAccount();
+  const { account }: any = useAccount();
   const contractClassRef = useRef<HTMLInputElement>(null);
   const compiledContractRef = useRef<HTMLInputElement>(null);
   const [contractClassFile, setContractClassFile] = useState<File | null>(null);
@@ -78,85 +78,31 @@ export default function EngineDeploy(_props: any) {
     return [42];
   }
 
-  const [deployDone, setDeployDone] = useState<"deploying" | "deployed" | undefined>(undefined);
+  const [deployDone, setDeployDone] = useState<"registering" | "declaring" | "deploying" | "deployed" | undefined>(undefined);
   const [deployedContractClassHash, setDeployedContractClassHash] = useState<string | null>(null);
   const [deployedContractAddress, setDeployedContractAddress] = useState<string | null>(null);
   const [contractClassName, setContractClassName] = useState<string>("");
   const [contractClassVersion, _setContractClassVersion] = useState<string>("v0.0.0");
-  console.log({
-    status
-  })
   const deploy = async () => {
     console.log("Declaring & Deploying contract...");
-    setDeployDone("deploying");
-    // const callData = compileDeployCallData();
-    // console.log({
-    //   compiledContractData,
-    //   contractClassData
-    // })
-    const { classHash } = extractContractHashes({
-      contract: {
-        sierra_program: contractClassData?.sierra_program,
-        sierra_program_debug_info: contractClassData?.sierra_program_debug_info,
-        contract_class_version: contractClassData?.contract_class_version,
-        entry_points_by_type: contractClassData?.entry_points_by_type,
-        abi: contractClassData?.abi
-      },
-      casm: compiledContractData
-    })
-    const declare_and_deploy = await account?.declareAndDeploy({
-      classHash,
-      salt: `0x${Math.floor(Math.random() * 1e16).toString(16)}`,
-      contract: {
-        sierra_program: contractClassData?.sierra_program,
-        sierra_program_debug_info: contractClassData?.sierra_program_debug_info,
-        contract_class_version: contractClassData?.contract_class_version,
-        entry_points_by_type: contractClassData?.entry_points_by_type,
-        abi: contractClassData?.abi
-      },
+    const testDeclarePayload = {
+      contract: contractClassData,
       casm: compiledContractData,
-      constructorCalldata: CallData.compile([contractClassVersion]),
-      unique: true
+    };
+    const builtDeclarePayload = await account?.buildDeclarePayload(testDeclarePayload, { skipValidate: true });
+    testDeclarePayload.contract.abi = builtDeclarePayload.contract.abi;
+    const extractedData = extractContractHashes(testDeclarePayload);
+    setDeployDone("registering");
+    await registerClassCall(account, extractedData?.classHash, contractClassName, contractClassVersion);
+    setDeployDone("declaring");
+    const { classHash, contract, casm } = await declareContract(account, contractClassData, compiledContractData);
+    setDeployDone("deploying");
+    const deploy = await account?.deploy({
+      classHash,
+      constructorCalldata: compileDeployCallData()
     })
-    // const classHash = await declareContract(account, contractClassData, compiledContractData);
-    // console.log("Class Hash: ", classHash);
-    setDeployedContractClassHash(declare_and_deploy?.deploy?.classHash || "");
-    // TODO: multicall
-    /*
-    await registerClassCall(account, classHash, contractClassName, contractClassVersion);
-    console.log("Registered class hash with registry");
-    await deployContractCall(account, classHash, callData);
-    console.log("Deployed contract with registry");
-    */
-    // const multiTxHash = await registerDeployMultiCall(account, classHash, contractClassName, contractClassVersion, callData);
-    // console.log("Registered deploy with registry", multiTxHash);
-    // if (!account) return;
-    // let res = null;
-    // let attempts = 0;
-    // while (!res && attempts < 5) {
-    //   // Try the above call till it returns a receipt ( it fails if the tx is not mined yet )
-    //   console.log("Waiting for receipt...");
-    //   await new Promise((resolve) => setTimeout(resolve, 2000));
-    //   try {
-    //     res = await account.getTransactionReceipt(multiTxHash) as any;
-    //   } catch (err) {
-    //     console.log("Error getting transaction receipt: ", err);
-    //   }
-    //   attempts++;
-    // }
-    // console.log("Transaction receipt: ", res);
-    // const deployedEvent = "0x206ba27d5bbda42a63e108ee1ac7a6455c197ee34cd40a268e61b06f78dbc9a";
-    // if (!res || !res.events) {
-    //   console.log("No receipt found");
-    //   return;
-    // }
-    // const deployedEventData = res.events.find((event: any) => event.keys[0] === deployedEvent);
-    // if (!deployedEventData) {
-    //   console.log("No deployed event found");
-    //   return;
-    // }
-    // const contractAddress = deployedEventData.keys[1];
-    setDeployedContractAddress(declare_and_deploy?.deploy?.contract_address || "");
+    setDeployedContractClassHash(classHash);
+    setDeployedContractAddress(deploy?.contract_address[0] || "");
     setDeployDone("deployed");
   }
   // TODO: Register events before deploying the contract
@@ -287,6 +233,16 @@ export default function EngineDeploy(_props: any) {
           )}
         </div>
       </div>
+      {
+        deployDone === "registering" && <div className="flex flex-row items-center gap-2">
+          <p className="text-[2rem]">Status: Registering Class...</p>
+        </div>
+      }
+      {
+        deployDone === "declaring" && <div className="flex flex-row items-center gap-2">
+          <p className="text-[2rem]">Status: Declaring...</p>
+        </div>
+      }
       {
         deployDone === "deploying" && <div className="flex flex-row items-center gap-2">
           <p className="text-[2rem]">Status: Deploying...</p>
