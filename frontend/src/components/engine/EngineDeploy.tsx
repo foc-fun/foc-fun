@@ -4,11 +4,11 @@ import { useAccount } from "@starknet-react/core";
 
 import { ContractInput } from "./ContractInput";
 import { declareContract } from "../../contract/calls";
-import { registerDeployMultiCall, registerClassCall, deployContractCall, registerEventsCall } from "../../contract/registry";
+import { registerClassCall, registerEventsCall } from "../../contract/registry";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
-import { CallData, DeclareContractPayload, extractContractHashes, hash, json } from "starknet";
+import { extractContractHashes, hash } from "starknet";
 // import edit from "../../../public/icons/edit.png";
 
 // TODO: no compiled_contract_class.json?
@@ -95,7 +95,7 @@ export default function EngineDeploy(_props: any) {
     setDeployDone("registering");
     await registerClassCall(account, extractedData?.classHash, contractClassName, contractClassVersion);
     setDeployDone("declaring");
-    const { classHash, contract, casm } = await declareContract(account, contractClassData, compiledContractData);
+    const { classHash } = await declareContract(account, contractClassData, compiledContractData);
     setDeployDone("deploying");
     const deploy = await account?.deploy({
       classHash,
