@@ -1,37 +1,23 @@
 'use client';
 
 import { useState } from "react";
-import EngineAPI from "../engine/EngineAPI";
 import EngineDeploy from "../engine/EngineDeploy";
-import EngineInvoke from "../engine/EngineInvoke";
-import EngineIndex from "../engine/EngineIndex";
-import EngineInspect from "../engine/EngineInspect";
+import EngineContracts from "../engine/EngineContracts";
+import EnginePipelines from "../engine/EnginePipelines";
 
 const Engine = () => {
   const tabOptions = [
-    {
-      name: "API",
-      component: <EngineAPI />,
-    },
     {
       name: "Deploy",
       component: <EngineDeploy />,
     },
     {
-      name: "Invoke",
-      component: <EngineInvoke />,
-    },
-    {
-      name: "Inspect",
-      component: <EngineInspect />,
-    },
-    {
-      name: "Index",
-      component: <EngineIndex />,
+      name: "Contracts",
+      component: <EngineContracts />,
     },
     {
       name: "Pipelines",
-      component: <EngineDeploy />,
+      component: <EnginePipelines />,
     },
   ];
   const [activeTab, setActiveTab] = useState(tabOptions[1]);

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.volumes.abis.claim }}
+  labels:
+    app: abis
+spec:
+  storageClassName: {{ .Values.volumes.abis.class }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volumes.abis.storage }}
+

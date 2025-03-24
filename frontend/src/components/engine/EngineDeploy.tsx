@@ -3,17 +3,16 @@ import { useState, useRef, useEffect } from "react";
 import { useAccount, useProvider } from "@starknet-react/core";
 
 import { ContractInput } from "./ContractInput";
-import { declareContract } from "../../contract/calls";
-import { feltString, registerClassCall, registerDeployMultiCall, registerContractAndEventsCall } from "../../contract/registry";
+import { declareIfClass } from "../../contract/calls";
+import { fullSetupCall } from "../../contract/registry";
+import { addContractClass } from "../../api/registry";
 
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
-import { extractConContract, tractHashes, hash, Contract, extractContractHashes, json } from "starknet";
-import { REGISTRY_CONTRACT_ADDRESS } from "../../../constants";
+import copy from "../../../public/icons/copy.png";
 // import edit from "../../../public/icons/edit.png";
 
 // TODO: no compiled_contract_class.json?
-// TODO: All spots null is returned, send err
 // TODO: Issue where bg turns white when selecting input text from dropdown
 // TODO: Save config option
 // TODO: Load config option
@@ -24,8 +23,8 @@ import { REGISTRY_CONTRACT_ADDRESS } from "../../../constants";
 //        - Send to backend w/ hash of all data & contract hash
 // TODO: Voyager links on class hash & contract address
 // TODO: Shorten class hash & contract address & add copy button
-export default function EngineDeploy(_props: any) {
-  const { account }: any = useAccount();
+export default function EngineDeploy() {
+  const { account } = useAccount();
   const contractClassRef = useRef<HTMLInputElement>(null);
   const compiledContractRef = useRef<HTMLInputElement>(null);
   const [contractClassFile, setContractClassFile] = useState<File | null>(null);
@@ -79,66 +78,32 @@ export default function EngineDeploy(_props: any) {
     return [42];
   }
 
-  const isClassRegistered = async (provider: any, classHash: string) => {
-    const { abi } = await provider.getClassAt(REGISTRY_CONTRACT_ADDRESS);
-    if (abi === undefined) {
-      console.log("No registry contract abi found.")
-    }
-    const contract = new Contract(json.parse(abi), REGISTRY_CONTRACT_ADDRESS, provider);
-    const get_class = await contract.get_class(classHash);
-    console.log({
-      get_class
-    })
-    return !((feltString(get_class?.name) === "0x0") && (feltString(get_class?.version) === "0x0"))
-  }
-
-  const isContractDeployed = async (provider: any, contractAddress: string) => {
-    try {
-      const result = await provider.getClassAt(contractAddress);
-      return result !== undefined;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  const [deployDone, setDeployDone] = useState<"registering" | "declaring" | "deploying" | "deployed" | undefined>(undefined);
   const [deployedContractClassHash, setDeployedContractClassHash] = useState<string | null>(null);
   const [deployedContractAddress, setDeployedContractAddress] = useState<string | null>(null);
+  const [shortDeployedContractClassHash, setShortDeployedContractClassHash] = useState<string | null>(null);
+  const [shortDeployedContractAddress, setShortDeployedContractAddress] = useState<string | null>(null);
+  useEffect(() => {
+    if (!deployedContractClassHash) return;
+    setShortDeployedContractClassHash(deployedContractClassHash.slice(0, 8) + "..." + deployedContractClassHash.slice(-8));
+  }, [deployedContractClassHash]);
+  useEffect(() => {
+    if (!deployedContractAddress) return;
+    setShortDeployedContractAddress(deployedContractAddress.slice(0, 8) + "..." + deployedContractAddress.slice(-8));
+  }, [deployedContractAddress]);
   const [contractClassName, setContractClassName] = useState<string>("");
   const [contractClassVersion, _setContractClassVersion] = useState<string>("v0.0.0");
   const { provider } = useProvider();
   const deploy = async () => {
+    if (!account) return;
     console.log("Declaring & Deploying contract...");
-    const testDeclarePayload = {
-      contract: contractClassData,
-      casm: compiledContractData,
-    };
-    const builtDeclarePayload = await account?.buildDeclarePayload(testDeclarePayload, { skipValidate: true });
-    testDeclarePayload.contract.abi = builtDeclarePayload.contract.abi;
-    const { classHash } = await declareContract(account, contractClassData, compiledContractData, setDeployDone);
-    const classRegistered = await isClassRegistered(provider, classHash);
-    console.log({
-      classRegistered,
-      classHash
-    })
-    if (!classRegistered) {
-      setDeployDone("registering");
-      await registerClassCall(account, classHash, contractClassName, contractClassVersion);
-    }
-    const calldata = compileDeployCallData()
-    const contractAddress = hash.calculateContractAddressFromHash("0", classHash, calldata, REGISTRY_CONTRACT_ADDRESS);
-    const deployed = await isContractDeployed(provider, contractAddress)
-    if (!deployed) {
-      setDeployDone("deploying");
-      await registerDeployMultiCall(account, classHash, contractClassName, contractClassVersion, calldata);
-    }
-    setDeployedContractAddress(contractAddress);
-    setDeployedContractClassHash(classHash);
-    setDeployDone("deployed");
-  }
-  // TODO: Register events before deploying the contract
-  const registerEvents = async () => {
-    if (!deployedContractAddress) return;
+
+    const callData = compileDeployCallData();
+    const result = await declareIfClass(account, contractClassData, compiledContractData);
+    console.log("Class Hash: ", result);
+    setDeployedContractClassHash(result.classHash);
+    const addContractRes = await addContractClass(result.classHash, contractClassRef.current?.files?.[0] as File);
+    console.log("Add contract result: ", addContractRes);
+    // TODO: Wait for class to be declared on chain
 
     // Get all events to register
     const eventsData = contractAbi.find((item: any) => item.type === "event" &&
@@ -147,14 +112,41 @@ export default function EngineDeploy(_props: any) {
     const eventsToRegister = eventsData.variants.map((event: any) => {
       return hash.getSelectorFromName(event.name);
     });
-    console.log("Events to register: ", deployedContractAddress, eventsToRegister);
-
-    // Register each event
-    await registerContractAndEventsCall(account, deployedContractAddress, deployedContractClassHash || "", eventsToRegister);
+    console.log("Events to register: ", eventsToRegister);
+    // TODO: Do deployAndRegisterCall if class already registered?
+    const fullSetupRes = await fullSetupCall(account, result.classHash, contractClassName, contractClassVersion, callData, eventsToRegister);
+    console.log("Full setup result: ", fullSetupRes);
+    // TODO: Replace with event wss listener
+    let attempts = 0;
+    let receipt = null;
+    while (!receipt && attempts < 5) {
+      // Try the above call till it returns a receipt ( it fails if the tx is not mined yet )
+      console.log("Waiting for receipt...");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      try {
+        receipt = await account.getTransactionReceipt(fullSetupRes.transaction_hash) as any;
+      } catch (err) {
+        console.log("Error getting transaction receipt: ", err);
+      }
+      attempts++;
+    }
+    if (!receipt) {
+      console.log("Transaction not mined yet.");
+      return;
+    }
+    console.log("Receipt: ", receipt);
+    const deployedEvent = "0x206ba27d5bbda42a63e108ee1ac7a6455c197ee34cd40a268e61b06f78dbc9a";
+    if (!receipt || !receipt.events) {
+      console.log("No receipt found");
+      return;
+    }
+    const deployedEventData = receipt.events.find((event: any) => event.keys[0] === deployedEvent);
+    if (!deployedEventData) {
+      console.log("No deployed event found");
+      return;
+    }
+    setDeployedContractAddress(contractAddress);
   }
-  useEffect(() => {
-    registerEvents();
-  }, [deployedContractAddress]);
 
   const saveDeployment = async () => {
     console.log(contractAbi);
@@ -264,25 +256,21 @@ export default function EngineDeploy(_props: any) {
           )}
         </div>
       </div>
-      {
-        deployDone === "registering" && <div className="flex flex-row items-center gap-2">
-          <p className="text-[2rem]">Status: Registering Class...</p>
-        </div>
-      }
-      {
-        deployDone === "declaring" && <div className="flex flex-row items-center gap-2">
-          <p className="text-[2rem]">Status: Declaring...</p>
-        </div>
-      }
-      {
-        deployDone === "deploying" && <div className="flex flex-row items-center gap-2">
-          <p className="text-[2rem]">Status: Deploying...</p>
-        </div>
-      }
-      {deployDone === "deployed" && (
-        <div className="flex flex-row items-center gap-2">
-          <p className="text-[2rem]">Class Hash: {deployedContractClassHash}</p>
-          <p className="text-[2rem]">Contract Address: {deployedContractAddress}</p>
+      {deployedContractClassHash && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-[2.4rem]">Deployed Contract :</h2>
+          <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2">
+              <p className="text-[1.6rem]">Class Hash: {shortDeployedContractClassHash}</p>
+              <Image src={copy} alt="Copy" className="w-[1.6rem] h-[1.6rem] cursor-pointer"
+                onClick={() => navigator.clipboard.writeText(deployedContractClassHash)} />
+            </div>
+            <div className="flex flex-row gap-2">
+              <p className="text-[1.6rem]">Contract Address: {shortDeployedContractAddress}</p>
+              <Image src={copy} alt="Copy" className="w-[1.6rem] h-[1.6rem] cursor-pointer"
+                onClick={() => navigator.clipboard.writeText(deployedContractAddress || "")} />
+            </div>
+          </div>
         </div>
       )}
     </div>
