@@ -5,7 +5,7 @@ import { hash } from "starknet";
 
 import { ContractInput } from "./ContractInput";
 import { declareIfClass } from "../../contract/calls";
-import { fullSetupCall, deployAndRegisterCall } from "../../contract/registry";
+import { fullSetupCall } from "../../contract/registry";
 import { addContractClass } from "../../api/registry";
 
 import upload from "../../../public/icons/upload.png";

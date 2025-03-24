@@ -123,6 +123,11 @@ type RegistryContractEvent struct {
 }
 
 func GetContractsEvents(w http.ResponseWriter, r *http.Request) {
+  address := r.URL.Query().Get("address")
+  if address == "" {
+    routeutils.WriteErrorJson(w, http.StatusBadRequest, "Contract address not specified")
+    return
+  }
 	pageLength, err := strconv.Atoi(r.URL.Query().Get("pageLength"))
 	if err != nil || pageLength < 1 {
 		pageLength = 10
@@ -136,8 +141,8 @@ func GetContractsEvents(w http.ResponseWriter, r *http.Request) {
 	}
 	offset := (page - 1) * pageLength
 
-	query := "Select events.*, contracts.class_hash from events RIGHT JOIN registeredcontracts ON events.contract_address = registeredcontracts.address LIMIT $1 OFFSET $2"
-	contractsEvents, err := db.PostgresQueryJson[RegistryContractEvent](query, pageLength, offset)
+	query := "Select events.*, contracts.class_hash from events LEFT JOIN contracts ON events.contract_address = contracts.address RIGHT JOIN registeredevents ON registeredevents.event_id = events.id WHERE events.contract_address = $1 LIMIT $2 OFFSET $3"
+	contractsEvents, err := db.PostgresQueryJson[RegistryContractEvent](query, address, pageLength, offset)
 	if err != nil {
 		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error getting registered contracts events")
 		return
