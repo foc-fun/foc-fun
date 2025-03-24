@@ -412,6 +412,57 @@ export default function EnginePipelines() {
           inputRefs={[]}
           outputRefs={[]}
         />
+        <PipelineBlock
+          width={228}
+          height={124}
+          style={{
+            width: 228 * canvasScale * artificialZoom,
+            height: 124 * canvasScale * artificialZoom,
+            position: "absolute",
+            left: (606) * canvasScale,
+            top: (-20) * canvasScale,
+          }}
+          origin={{
+            x: (606) * canvasScale,
+            y: (-20) * canvasScale,
+          }}
+          title="Invoke AdvancedContract SetValue"
+          inputs={[
+            {
+              name: "contract",
+              type: "address",
+            },
+            {
+              name: "value",
+              type: "string",
+            },
+          ]}
+          outputs={[]}
+          inputRefs={[]}
+          outputRefs={[]}
+        />
+      </div>
+      <div
+        className="absolute bottom-0 left-0 w-full flex flex-row justify-end gap-4 p-4"
+      >
+        <button
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-l"
+          onClick={() => console.log("Save")}
+        >
+          Save
+        </button>
+        <button
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-r"
+          onClick={() => console.log("Load")}
+        >
+          Load
+        </button>
+        <button
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-r"
+          onClick={() => console.log("New")}
+        >
+          New
+        </button>
       </div>
     </div>
   );

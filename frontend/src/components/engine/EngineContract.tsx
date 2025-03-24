@@ -48,7 +48,12 @@ export default function EngineContracts(props: any) {
   ]);
   const [selectedTab, setSelectedTab] = useState(tabs[0].name);
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    <div className="w-full h-full flex flex-col items-center relative">
+      <div className="absolute top-0 right-0 p-4">
+        <button onClick={() => props.onClose()} className="bg-red-500 text-white px-4 py-2 rounded">
+          Close
+        </button>
+      </div>
       <h1 className="text-[3.2rem] m-8">Contract {props.name}</h1>
       <div className="w-full flex flex-col items-center">
         <div className="w-full flex justify-center items-center">
