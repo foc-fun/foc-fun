@@ -263,12 +263,12 @@ export default function EngineDeploy() {
           <div className="flex flex-row gap-2">
             <div className="flex flex-row gap-2">
               <p className="text-[1.6rem]">Class Hash: {shortDeployedContractClassHash}</p>
-              <img src={copy} alt="Copy" className="w-[1.6rem] h-[1.6rem] cursor-pointer"
+              <Image src={copy} alt="Copy" className="w-[1.6rem] h-[1.6rem] cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(deployedContractClassHash)} />
             </div>
             <div className="flex flex-row gap-2">
               <p className="text-[1.6rem]">Contract Address: {shortDeployedContractAddress}</p>
-              <img src={copy} alt="Copy" className="w-[1.6rem] h-[1.6rem] cursor-pointer"
+              <Image src={copy} alt="Copy" className="w-[1.6rem] h-[1.6rem] cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(deployedContractAddress || "")} />
             </div>
           </div>
