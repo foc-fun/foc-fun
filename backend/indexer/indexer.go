@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/b-j-roberts/foc-fun/backend/internal/db"
 	routeutils "github.com/b-j-roberts/foc-fun/backend/routes/utils"
 )
 
@@ -403,8 +404,23 @@ func TryProcessPendingMessage() bool {
 	return true
 }
 
+type RegisteredEventData struct {
+	EventId         int    `json:"eventId"`
+	ContractAddress string `json:"contractAddress"`
+	EventSelector   string `json:"eventSelector"`
+}
+
 func StartMessageProcessor() {
-	// TODO: Init RegistedEvents from DB
+	query := "SELECT * FROM registeredevents"
+	events, err := db.PostgresQuery[RegisteredEventData](query)
+	if err != nil {
+		fmt.Println("Error getting registered events from DB", err)
+		events = []RegisteredEventData{}
+	}
+	for _, event := range events {
+		RegisterEventMemory(event.EventId, event.ContractAddress, event.EventSelector)
+	}
+
 	// Goroutine to process pending/accepted messages
 	go func() {
 		for {

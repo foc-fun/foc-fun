@@ -7,7 +7,7 @@ import logo from "../../app/icon.png";
 import logout from "../../../public/icons/logout.png";
 
 // TODO: Underline selected tab
-export const Header = (_props: any) => {
+export const Header = () => {
   const { address } = useAccount();
   const { connector } = useConnect();
   const { disconnect } = useDisconnect();

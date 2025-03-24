@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -16,6 +19,9 @@ func InitEventsRoutes() {
 	http.HandleFunc("/events/get-latest-with", getLatestEventWith)
 	http.HandleFunc("/events/get-events-ordered", getEventsOrdered)
 	http.HandleFunc("/events/get-events-ordered-data", getEventsOrderedData)
+	http.HandleFunc("/events/get-registered-events", getRegisteredEvents)
+
+	http.HandleFunc("/events/get-latest-typed", getLatestEventTyped)
 }
 
 type Event struct {
@@ -45,6 +51,79 @@ func getLatestEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	routeutils.WriteDataJson(w, string(event))
+}
+
+type EventTypedInput struct {
+	ID        int      `json:"id"`
+	EventId   int      `json:"event_id"`
+	Keys      []string `json:"keys"`
+	Data      []string `json:"data"`
+	ClassHash string   `json:"class_hash"`
+}
+
+func getLatestEventTyped(w http.ResponseWriter, r *http.Request) {
+	eventIdStr := r.URL.Query().Get("eventId")
+	if eventIdStr == "" {
+		routeutils.WriteErrorJson(w, http.StatusBadRequest, "Missing eventId")
+		return
+	}
+	eventId, err := strconv.Atoi(eventIdStr)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusBadRequest, "Invalid eventId")
+		return
+	}
+
+	query := "SELECT e.*, c.class_hash FROM ProcessedEvents e JOIN Events ev ON e.event_id = ev.id JOIN Contracts c ON ev.contract_address = c.address WHERE e.event_id=$1 ORDER BY e.id DESC LIMIT 1"
+	event, err := db.PostgresQueryOne[EventTypedInput](query, eventId)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error fetching latest event")
+		return
+	}
+
+	filename := "abis/0x" + event.ClassHash + ".json"
+	if _, err := os.Stat(filename); err != nil {
+		routeutils.WriteErrorJson(w, http.StatusBadRequest, "Contract class does not exist")
+		return
+	}
+
+	// TODO: Typename from eventid
+	typeName := r.URL.Query().Get("type")
+	if typeName == "" {
+		routeutils.WriteErrorJson(w, http.StatusBadRequest, "Type not specified")
+		return
+	}
+
+	file, err := os.Open(filename)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error opening contract class file")
+		return
+	}
+	defer file.Close()
+
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error reading contract class file")
+		return
+	}
+
+	var contractClass ContractClass
+	err = json.Unmarshal(fileBytes, &contractClass)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error unmarshalling contract class file")
+		return
+	}
+
+	abi := contractClass.Abi
+	eventData := event.Keys[1:]
+	eventData = append(eventData, event.Data...)
+	typeNameJson := StarknetTypeDataMin(typeName, abi, eventData)
+	typeNameJsonBytes, err := json.Marshal(typeNameJson)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error marshalling typed event")
+		return
+	}
+
+	routeutils.WriteDataJson(w, string(typeNameJsonBytes))
 }
 
 func getEvents(w http.ResponseWriter, r *http.Request) {
@@ -318,4 +397,37 @@ func getEventsOrderedData(w http.ResponseWriter, r *http.Request) {
 		}
 		routeutils.WriteDataJson(w, string(events))
 	}
+}
+
+type RegisteredEvent struct {
+	EventId         int    `json:"event_id"`
+	ContractAddress string `json:"contract_address"`
+	Selector        string `json:"selector"`
+}
+
+func getRegisteredEvents(w http.ResponseWriter, r *http.Request) {
+	pageLength, err := strconv.Atoi(r.URL.Query().Get("pageLength"))
+	if err != nil || pageLength < 1 {
+		pageLength = 10
+	}
+	if pageLength > 30 {
+		pageLength = 30
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	offset := (page - 1) * pageLength
+
+	query := "SELECT * FROM RegisteredEvents LIMIT $1 OFFSET $2"
+	events, err := db.PostgresQueryJson[RegisteredEvent](query, pageLength, offset)
+	if err != nil {
+		routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error fetching events")
+		return
+	}
+	if events == nil {
+		routeutils.WriteErrorJson(w, http.StatusNotFound, "No events found")
+		return
+	}
+	routeutils.WriteDataJson(w, string(events))
 }
