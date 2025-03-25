@@ -3,5 +3,5 @@ name: foc-fun-infra
 description: Helm charts for the foc.fun infra
 
 type: application
-version: 0.1.1
-appVersion: "v0.1.3"
+version: 0.1.2
+appVersion: "v0.2.0"

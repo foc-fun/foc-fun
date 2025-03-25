@@ -17,6 +17,10 @@ ports:
   consumer: 8081
 
 volumes:
+  abis:
+    name: abis-data
+    class: standard-rwo
+    storage: 10Gi
   redis:
     name: redis-data
     class: standard-rwo
@@ -58,4 +62,4 @@ apibara:
   authToken: dna_aabbcc
 
 contracts:
-  focFunRegistryContract: 0x06c28e3b1442ea866c0a29b2094e76983a6260d5e54216a5d12cdd676f65a6e5
+  focFunRegistryContract: 0x04ab31e99cb125e9bf537011f4fa21e4e0b5e7fb01e726c9f2bb8dce0957dbd4
