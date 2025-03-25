@@ -13,7 +13,7 @@ export default function EngineContracts() {
     const fetchContracts = async () => {
       try {
         // TODO: Pagination
-        const data = await getRegisteredContracts();
+        const data = await getRegisteredContracts(30, 0);
         setContracts(data.data);
       } catch (err) {
         setError(err);
