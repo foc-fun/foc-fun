@@ -10,7 +10,7 @@ import { addContractClass } from "../../api/registry";
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
 import copy from "../../../public/icons/copy.png";
-import { cairo, hash } from "starknet";
+import { cairo, CallData, hash, json } from "starknet";
 import { parseStarknetType } from "@/abi/parser";
 // import edit from "../../../public/icons/edit.png";
 
@@ -79,11 +79,6 @@ export default function EngineDeploy() {
     e.preventDefault();
   }
 
-  const compileDeployCallData = (): any[] => {
-    // TODO: Compile the call data from input fields
-    return [42];
-  }
-
   const [deployedContractClassHash, setDeployedContractClassHash] = useState<string | null>(null);
   const [deployedContractAddress, setDeployedContractAddress] = useState<string | null>(null);
   const [shortDeployedContractClassHash, setShortDeployedContractClassHash] = useState<string | null>(null);
@@ -99,25 +94,41 @@ export default function EngineDeploy() {
   const [contractClassName, setContractClassName] = useState<string>("");
   const [contractClassVersion, _setContractClassVersion] = useState<string>("v0.0.0");
   
-  const validateInputTypes = (): boolean => {
-    return constructorInputs?.every((input, id) => {
+  const validateInputTypes = (): { isValid: boolean, values: any[] } => {
+    const values: any[] = [];
+    const isValid = constructorInputs?.every((input, id) => {
       const parsedType = parseStarknetType(input?.type, contractAbi)?.type;
       const parsedKind = parseStarknetType(input?.type, contractAbi)?.kind;
       if (parsedKind === 'array') {
-        return inputItemsPlaceholders.every((_: any, pos: number) => {
+        const arrayValues: any[] = [];
+        const isArrayValid = inputItemsPlaceholders.every((_: any, pos: number) => {
           const inputElement = document.getElementById(`${id}-${parsedType}-${pos}`) as HTMLInputElement;
           const inputValue = inputElement?.value;
           if (!inputValue) return false;
-          return validateInputValue(parsedType, inputValue);
+
+          const isValid = validateInputValue(parsedType, inputValue);
+          if (isValid) {
+            arrayValues.push(inputValue);
+          }
+          return isValid;
         });
+        if (isArrayValid) {
+          values.push(arrayValues);
+        }
+        return isArrayValid;
       } else {
         const inputElement = document.getElementById(`${id}-${parsedType}`) as HTMLInputElement;
         const inputValue = inputElement?.value;
         if (!inputValue) return false; // Ensure input is not empty
-  
-        return validateInputValue(parsedType, inputValue);
+
+        const isValid = validateInputValue(parsedType, inputValue);
+        if (isValid) {
+          values.push(inputValue);
+        }
+        return isValid;
       }
     }) ?? false;
+    return { isValid, values };
   };
   
   const validateInputValue = (parsedType: string, inputValue: string): boolean => {
@@ -205,13 +216,10 @@ export default function EngineDeploy() {
     if (!account) return;
     console.log("Declaring & Deploying contract...");
 
-    console.log({
-      isValid: validateInputTypes()
-    })
+    if (!validateInputTypes()?.isValid) return;
 
-    if (!validateInputTypes()) return;
-
-    const callData = compileDeployCallData();
+    const callData: any = validateInputTypes()?.values;
+    
     const result = await declareIfClass(account, contractClassData, compiledContractData);
     console.log("Class Hash: ", result);
     setDeployedContractClassHash(result.classHash);
