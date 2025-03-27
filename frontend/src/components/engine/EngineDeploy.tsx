@@ -265,9 +265,6 @@ export default function EngineDeploy() {
   const saveDeployment = async () => {
     console.log(contractAbi);
   }
-  console.log({
-    constructorInputs
-  })
 
   return (
     <div className="w-full h-full flex flex-col items-center">
