@@ -30,8 +30,8 @@ pub mod BasicContract {
 
     #[constructor]
     fn constructor(ref self: ContractState, initial_value: felt252) {
-        self.value.write(initial_value + 34);
-        self.emit(ValueChanged { index: 0, old_value: 410, new_value: initial_value, });
+        self.value.write(initial_value + 35);
+        self.emit(ValueChanged { index: 0, old_value: 420, new_value: initial_value, });
         self.index.write(1);
     }
 

@@ -34,6 +34,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=password
       - CONFIG_PATH=/configs/config.yaml
+      - MONGO_URI=${MONGO_URI}
     volumes:
       - ./abis:/app/abis
   consumer:
@@ -50,6 +51,9 @@ services:
       - POSTGRES_PASSWORD=password
       - CONFIG_PATH=/configs/config.yaml
       - FOC_FUN_REGISTRY_CONTRACT=0x04ab31e99cb125e9bf537011f4fa21e4e0b5e7fb01e726c9f2bb8dce0957dbd4
+      - MONGO_URI=${MONGO_URI}
+    volumes:
+      - ./abis:/app/abis
   indexer:
     build:
       dockerfile: indexer/Dockerfile

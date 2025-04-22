@@ -21,6 +21,7 @@ volumes:
     name: abis-data
     class: standard-rwo
     storage: 10Gi
+    claim: abis-volume-claim
   redis:
     name: redis-data
     class: standard-rwo

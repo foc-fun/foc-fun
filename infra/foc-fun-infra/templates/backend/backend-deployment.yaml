@@ -28,4 +28,4 @@ spec:
       volumes:
         - name: {{ .Values.volumes.abis.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.volumes.abis.name }}
+            claimName: {{ .Values.volumes.abis.claim }}

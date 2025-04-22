@@ -22,6 +22,9 @@ func InitEventsRoutes() {
 	http.HandleFunc("/events/get-registered-events", getRegisteredEvents)
 
 	http.HandleFunc("/events/get-latest-typed", getLatestEventTyped)
+
+  http.HandleFunc("/events/get-events-mongo", getEventsMongo)
+  http.HandleFunc("/events/get-events-mongo-with", getEventsMongoWith)
 }
 
 type Event struct {
@@ -430,4 +433,130 @@ func getRegisteredEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	routeutils.WriteDataJson(w, string(events))
+}
+
+func getEventsMongo(w http.ResponseWriter, r *http.Request) {
+  eventId := r.URL.Query().Get("eventId")
+  if eventId == "" {
+    routeutils.WriteErrorJson(w, http.StatusBadRequest, "Missing eventId")
+    return
+  }
+  eventIdInt, err := strconv.Atoi(eventId)
+  if err != nil {
+    routeutils.WriteErrorJson(w, http.StatusBadRequest, "Invalid eventId")
+    return
+  }
+
+  res, err := db.GetFocFunEventsCollection().Find(r.Context(), map[string]interface{}{
+    "event_id": eventIdInt,
+  })
+  if err != nil {
+    routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error fetching events")
+    return
+  }
+  defer res.Close(r.Context())
+  var events []map[string]interface{}
+  for res.Next(r.Context()) {
+    var event map[string]interface{}
+    if err := res.Decode(&event); err != nil {
+      routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error decoding event")
+      return
+    }
+    events = append(events, event)
+  }
+  if err := res.Err(); err != nil {
+    routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error fetching events")
+    return
+  }
+  if len(events) == 0 {
+    routeutils.WriteErrorJson(w, http.StatusNotFound, "No events found")
+    return
+  }
+
+  // Convert events to JSON
+  eventsJson, err := json.Marshal(events)
+  if err != nil {
+    routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error marshalling events")
+    return
+  }
+  // Write the JSON response
+  routeutils.WriteDataJson(w, string(eventsJson))
+}
+
+type MongoFilter struct {
+  Name  string `json:"name"`
+  Value interface{} `json:"value"`
+}
+func getEventsMongoWith(w http.ResponseWriter, r *http.Request) {
+  // Get the latest event for a specific eventId and key
+  eventIdStr := r.URL.Query().Get("eventId")
+  if eventIdStr == "" {
+    routeutils.WriteErrorJson(w, http.StatusBadRequest, "Missing eventId")
+    return
+  }
+  eventId, err := strconv.Atoi(eventIdStr)
+  if err != nil {
+    routeutils.WriteErrorJson(w, http.StatusBadRequest, "Invalid eventId")
+    return
+  }
+
+  // Get all other query params as keyFilters
+  keysFilterRaw := r.URL.Query()
+  keysFilter := make([]MongoFilter, 0)
+  for key, values := range keysFilterRaw {
+    if key == "eventId" {
+      continue
+    }
+    for _, value := range values {
+      valueInt, err := strconv.Atoi(value)
+      if err != nil {
+        routeutils.WriteErrorJson(w, http.StatusBadRequest, "Invalid value for key "+key)
+        return
+      }
+      keysFilter = append(keysFilter, MongoFilter{Name: key, Value: valueInt})
+    }
+  }
+  if len(keysFilter) == 0 {
+    routeutils.WriteErrorJson(w, http.StatusBadRequest, "Missing keys")
+    return
+  }
+
+  filter := map[string]interface{}{
+    "event_id": eventId,
+  }
+  for _, key := range keysFilter {
+    filter[key.Name] = key.Value
+  }
+
+  res, err := db.GetFocFunEventsCollection().Find(r.Context(), filter)
+  if err != nil {
+    routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error fetching events")
+    return
+  }
+  defer res.Close(r.Context())
+  var events []map[string]interface{}
+  for res.Next(r.Context()) {
+    var event map[string]interface{}
+    if err := res.Decode(&event); err != nil {
+      routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error decoding event")
+      return
+    }
+    events = append(events, event)
+  }
+  if err := res.Err(); err != nil {
+    routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error fetching events")
+    return
+  }
+  if len(events) == 0 {
+    routeutils.WriteErrorJson(w, http.StatusNotFound, "No events found")
+    return
+  }
+  // Convert events to JSON
+  eventsJson, err := json.Marshal(events)
+  if err != nil {
+    routeutils.WriteErrorJson(w, http.StatusInternalServerError, "Error marshalling events")
+    return
+  }
+  // Write the JSON response
+  routeutils.WriteDataJson(w, string(eventsJson))
 }

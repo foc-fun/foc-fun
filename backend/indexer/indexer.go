@@ -99,6 +99,7 @@ const (
 type RegisteredEvent struct {
 	Id              int
 	ContractAddress string
+  ClassHash       string
 	EventSelector   string
 }
 
@@ -108,6 +109,7 @@ func RegisterEventMemory(id int, contractAddress string, eventSelector string) {
 	RegistedEvents = append(RegistedEvents, RegisteredEvent{
 		Id:              id,
 		ContractAddress: "0x" + contractAddress,
+    ClassHash:       "0x04b04eb5a4fdb09484575dc85a5b7ff977b4204ed7e5b6dddd43ccde81ba555b", // TODO: Add class hash
 		EventSelector:   "0x" + eventSelector,
 	})
 }
