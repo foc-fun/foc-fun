@@ -228,7 +228,7 @@ const Play = () => {
         </section>
 
         {/* Games Grid */}
-        <section className="animate-fade-in">
+        <section className="animate-fade-in overflow-visible">
           {error ? (
             <div className="text-center py-12">
               <h3 className="text-2xl mb-4 text-red-500">Oops! Something went wrong</h3>
@@ -254,7 +254,7 @@ const Play = () => {
               <p className="text-muted">Try adjusting your search or filters</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-visible">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-visible p-4">
               {filteredProjects.map((project, index) => (
                 <Card 
                   key={index} 

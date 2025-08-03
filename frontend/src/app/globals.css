@@ -181,7 +181,7 @@ h1, h2, h3, h4, h5, h6 {
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
   margin: 0;
-  transform: translateY(-0.05em);
+  transform: translateY(-0.1em);
 }
 
 h1 { font-size: var(--text-5xl); }
@@ -322,7 +322,7 @@ img {
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
   line-height: 1;
-  transform: translateY(-0.05em);
+  transform: translateY(-0.1em);
   border-radius: var(--radius-lg);
   border: 2px solid transparent;
   cursor: pointer;
@@ -439,7 +439,7 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
+  overflow: visible;
   transition: all var(--transition-base);
 }
 
@@ -754,7 +754,7 @@ select option {
 .font-medium { font-weight: var(--font-medium); }
 .font-pixel { 
   font-family: var(--font-pixel); 
-  transform: translateY(-0.1em);
+  transform: translateY(-0.15em);
   display: inline-block;
 }
 .font-vt323 { font-family: var(--font-vt323); }
