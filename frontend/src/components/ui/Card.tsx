@@ -8,7 +8,7 @@ export interface CardProps {
   hoverable?: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({
+export const Card: React.FC<CardProps> = React.memo(({
   children,
   className = '',
   onClick,
@@ -25,7 +25,7 @@ export const Card: React.FC<CardProps> = ({
       {children}
     </div>
   );
-};
+});
 
 export interface CardMediaProps {
   src?: string;
@@ -35,7 +35,7 @@ export interface CardMediaProps {
   imageRendering?: 'auto' | 'pixelated';
 }
 
-export const CardMedia: React.FC<CardMediaProps> = ({
+export const CardMedia: React.FC<CardMediaProps> = React.memo(({
   src,
   videoSrc,
   alt,
@@ -51,18 +51,22 @@ export const CardMedia: React.FC<CardMediaProps> = ({
           loop
           muted
           playsInline
+          preload="metadata"
           src={videoSrc}
+          style={{ willChange: 'transform' }}
         />
       )}
       {src && (
         <Image
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ imageRendering }}
+          style={{ imageRendering, willChange: 'transform' }}
           src={src}
           alt={alt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={false}
+          loading="lazy"
+          quality={75}
         />
       )}
       {overlay && (
@@ -72,7 +76,7 @@ export const CardMedia: React.FC<CardMediaProps> = ({
       )}
     </div>
   );
-};
+});
 
 export interface CardBodyProps {
   children: React.ReactNode;

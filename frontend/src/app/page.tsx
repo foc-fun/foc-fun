@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 
 import { StarknetProvider } from "../components/StarknetProvider";
 import { Header } from "../components/header/header";
+import { ErrorBoundary } from "../components/ui";
 import Play from "../components/screens/play";
 import Engine from "../components/screens/engine";
 import Login from "../components/screens/login";
@@ -53,9 +54,11 @@ const App = () => {
 export default function Home() {
   return (
     <StrictMode>
-      <StarknetProvider>
-        <App />
-      </StarknetProvider>
+      <ErrorBoundary>
+        <StarknetProvider>
+          <App />
+        </StarknetProvider>
+      </ErrorBoundary>
     </StrictMode>
   );
 }

@@ -7,9 +7,9 @@ const About = () => {
     <div className="min-h-screen pt-20 pb-16">
       <div className="container">
         {/* Hero Section */}
-        <section className="text-center py-16 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl mb-4">The Starknet App Engine</h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto">
+        <section className="text-center py-16">
+          <h1 className="text-5xl md:text-6xl mb-4 animate-bounce-in">The Starknet App Engine</h1>
+          <p className="text-xl text-muted max-w-3xl mx-auto animate-fade-in-up animate-delay-300">
             foc.fun is a platform for deploying and managing smart contracts on Starknet, 
             making blockchain gaming accessible to everyone.
           </p>
@@ -19,7 +19,7 @@ const About = () => {
         <section className="py-12 animate-fade-in">
           <h2 className="text-4xl text-center mb-8">What is foc.fun?</h2>
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="card">
+            <div className="card hover-lift animate-slide-in-left">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">🎮 Gaming Platform</h3>
                 <p className="text-muted">
@@ -28,7 +28,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="card">
+            <div className="card hover-lift animate-slide-in-right">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">🔧 Developer Tools</h3>
                 <p className="text-muted">
@@ -37,7 +37,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="card">
+            <div className="card hover-lift animate-slide-in-left animate-delay-200">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">⚡ Powered by Starknet</h3>
                 <p className="text-muted">
@@ -46,7 +46,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="card">
+            <div className="card hover-lift animate-slide-in-right animate-delay-200">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">👥 Community Driven</h3>
                 <p className="text-muted">

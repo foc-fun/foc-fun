@@ -1,13 +1,23 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
-import { Card, CardMedia, CardBody, Badge, Button } from '../ui';
+import { useState, useEffect } from 'react';
+import { Card, CardMedia, CardBody, Badge, Button, LoadingCard } from '../ui';
 
 const Play = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Simulate loading time for demo
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const projects = [
       {
@@ -147,27 +157,27 @@ const Play = () => {
     <div className="min-h-screen pt-20 pb-16">
       <div className="container">
         {/* Hero Section */}
-        <section className="text-center py-12 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl mb-4">Play & Discover</h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto mb-8">
+        <section className="text-center py-12">
+          <h1 className="text-5xl md:text-6xl mb-4 animate-fade-in-up">Play & Discover</h1>
+          <p className="text-xl text-muted max-w-3xl mx-auto mb-8 animate-fade-in animate-delay-200">
             Explore the future of blockchain gaming on Starknet. From art experiments to strategy games, 
             discover unique experiences built by the community.
           </p>
           
           {/* Search and Filters */}
-          <div className="max-w-4xl mx-auto mb-8">
+          <div className="max-w-4xl mx-auto mb-8 animate-slide-in-left animate-delay-300">
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <input
                 type="text"
                 placeholder="Search games..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input flex-1"
+                className="input flex-1 hover-glow"
               />
               <select 
                 value={selectedGenre}
                 onChange={(e) => setSelectedGenre(e.target.value)}
-                className="input sm:w-auto"
+                className="input sm:w-auto hover-glow"
               >
                 {genres.map(genre => (
                   <option key={genre} value={genre}>
@@ -178,7 +188,7 @@ const Play = () => {
               <select 
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="input sm:w-auto"
+                className="input sm:w-auto hover-glow"
               >
                 {statuses.map(status => (
                   <option key={status} value={status}>
@@ -192,7 +202,26 @@ const Play = () => {
 
         {/* Games Grid */}
         <section className="animate-fade-in">
-          {filteredProjects.length === 0 ? (
+          {error ? (
+            <div className="text-center py-12">
+              <h3 className="text-2xl mb-4 text-red-500">Oops! Something went wrong</h3>
+              <p className="text-muted mb-6">{error}</p>
+              <Button 
+                variant="primary" 
+                onClick={() => {
+                  setError(null);
+                  setIsLoading(true);
+                  setTimeout(() => setIsLoading(false), 1000);
+                }}
+              >
+                Try Again
+              </Button>
+            </div>
+          ) : isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <LoadingCard count={6} />
+            </div>
+          ) : filteredProjects.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-2xl mb-4">No games found</h3>
               <p className="text-muted">Try adjusting your search or filters</p>
@@ -202,7 +231,7 @@ const Play = () => {
               {filteredProjects.map((project, index) => (
                 <Card 
                   key={index} 
-                  className="group cursor-pointer"
+                  className={`group cursor-pointer hover-lift animate-scale-in animate-delay-${Math.min(index * 100 + 100, 500)}`}
                   onClick={() => window.open(project.url, '_blank')}
                 >
                   <div className="relative">
