@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { useAccount, useProvider } from "@starknet-react/core";
+import { useAccount } from "@starknet-react/core";
 
 import { ContractInput } from "./ContractInput";
 import { declareIfClass } from "../../contract/calls";
@@ -10,7 +10,7 @@ import { addContractClass } from "../../api/registry";
 import upload from "../../../public/icons/upload.png";
 import uploaded from "../../../public/icons/uploaded.png";
 import copy from "../../../public/icons/copy.png";
-import { cairo, CallData, hash, json } from "starknet";
+import { hash } from "starknet";
 import { parseStarknetType } from "@/abi/parser";
 // import edit from "../../../public/icons/edit.png";
 
@@ -139,7 +139,7 @@ export default function EngineDeploy() {
         const encoded = new TextEncoder().encode(inputValue);
         const decoded = new TextDecoder().decode(encoded);
         return decoded === inputValue;
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     }
@@ -151,7 +151,7 @@ export default function EngineDeploy() {
         const num = BigInt(inputValue);
         const P = (BigInt(2) ** BigInt(251)) + (BigInt(17) * (BigInt(2) ** BigInt(192))) + BigInt(1);
         return num >= BigInt(0) && num < P;
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     }
@@ -172,7 +172,7 @@ export default function EngineDeploy() {
         const num = BigInt(inputValue);
         const maxValue = BigInt(2) ** BigInt(uintBitSizes[parsedType]);
         return num >= BigInt(0) && num < maxValue;
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     }
@@ -193,7 +193,7 @@ export default function EngineDeploy() {
         const minValue = -(BigInt(2) ** BigInt(intBitSizes[parsedType] - 1));
         const maxValue = (BigInt(2) ** BigInt(intBitSizes[parsedType] - 1)) - BigInt(1);
         return num >= minValue && num <= maxValue;
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     }
@@ -267,6 +267,7 @@ export default function EngineDeploy() {
       console.log("No deployed event found");
       return;
     }
+    const contractAddress = deployedEventData.data[0];
     setDeployedContractAddress(contractAddress);
   }
 

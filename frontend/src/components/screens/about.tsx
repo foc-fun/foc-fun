@@ -41,7 +41,7 @@ const About = () => {
               <div className="card-body">
                 <h3 className="text-2xl mb-4">⚡ Powered by Starknet</h3>
                 <p className="text-muted">
-                  Leverage Starknet's low fees and high performance. Your games run efficiently 
+                  Leverage Starknet&apos;s low fees and high performance. Your games run efficiently 
                   while maintaining full decentralization and security.
                 </p>
               </div>
@@ -88,7 +88,7 @@ const About = () => {
                 <span className="text-3xl">💰</span>
                 <div>
                   <h4 className="text-xl mb-2">Low Fees</h4>
-                  <p className="text-muted">Enjoy Starknet's efficient architecture for minimal transaction costs</p>
+                  <p className="text-muted">Enjoy Starknet&apos;s efficient architecture for minimal transaction costs</p>
                 </div>
               </div>
             </div>
@@ -97,7 +97,7 @@ const About = () => {
 
         {/* Roadmap Section */}
         <section className="py-12 animate-fade-in">
-          <h2 className="text-4xl text-center mb-8">What's Coming</h2>
+          <h2 className="text-4xl text-center mb-8">What&apos;s Coming</h2>
           <div className="max-w-4xl mx-auto">
             <div className="relative">
               <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"></div>

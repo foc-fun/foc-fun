@@ -27,6 +27,8 @@ export const Card: React.FC<CardProps> = React.memo(({
   );
 });
 
+Card.displayName = 'Card';
+
 export interface CardMediaProps {
   src?: string;
   videoSrc?: string;
@@ -77,6 +79,8 @@ export const CardMedia: React.FC<CardMediaProps> = React.memo(({
     </div>
   );
 });
+
+CardMedia.displayName = 'CardMedia';
 
 export interface CardBodyProps {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createRef } from "react";
+import React, { useState, useEffect, useRef, createRef, useCallback } from "react";
 
 function PipelineBlock(props: any) {
   return (
@@ -83,7 +83,7 @@ export default function EnginePipelines() {
   const mainCanvasRef = useRef(null as any);
   const minScale = 0.6;
   const maxScale = 40;
-  const zoom = (e: any) => {
+  const zoom = useCallback((e: any) => {
     // Get the cursor position within the canvas ( note the canvas can go outside the viewport )
     if (!mainCanvasRef.current) return;
     const rect = mainCanvasRef.current.getBoundingClientRect();
@@ -121,11 +121,11 @@ export default function EnginePipelines() {
     setCanvasScale(newScale);
     setCanvasX(newPosX);
     setCanvasY(newPosY);
-  };
+  }, [canvasScale, canvasX, canvasY, artificialZoom]);
 
   const [touchInitialDistance, setInitialTouchDistance] = useState(0);
   const [touchScale, setTouchScale] = useState(1);
-  const handleTouchStart = (e: any) => {
+  const handleTouchStart = useCallback((e: any) => {
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
@@ -136,9 +136,9 @@ export default function EnginePipelines() {
       setTouchScale(canvasScale);
       setInitialTouchDistance(initialDistance);
     }
-  };
+  }, [canvasScale]);
 
-  const handleTouchMove = (e: any) => {
+  const handleTouchMove = useCallback((e: any) => {
     if (e.touches.length === 2) {
       const [touch1, touch2] = e.touches;
       const distance = Math.sqrt(
@@ -186,26 +186,27 @@ export default function EnginePipelines() {
 
       // TODO: Make scroll acceleration based
     }
-  };
+  }, [touchInitialDistance, touchScale, minScale, maxScale, baseWorldX, baseWorldY, artificialZoom, canvasX, canvasY]);
 
   useEffect(() => {
-    if (!canvasControllerRef.current) return;
-    canvasControllerRef.current.addEventListener("wheel", zoom);
-    canvasControllerRef.current.addEventListener("touchstart", handleTouchStart);
-    canvasControllerRef.current.addEventListener("touchmove", handleTouchMove);
+    const currentCanvas = canvasControllerRef.current;
+    if (!currentCanvas) return;
+    currentCanvas.addEventListener("wheel", zoom);
+    currentCanvas.addEventListener("touchstart", handleTouchStart);
+    currentCanvas.addEventListener("touchmove", handleTouchMove);
     return () => {
-      if (!canvasControllerRef.current) return;
-      canvasControllerRef.current.removeEventListener("wheel", zoom);
-      canvasControllerRef.current.removeEventListener(
+      if (!currentCanvas) return;
+      currentCanvas.removeEventListener("wheel", zoom);
+      currentCanvas.removeEventListener(
         "touchstart",
         handleTouchStart
       );
-      canvasControllerRef.current.removeEventListener(
+      currentCanvas.removeEventListener(
         "touchmove",
         handleTouchMove
       );
     };
-  }, [canvasScale, canvasX, canvasY, touchInitialDistance]);
+  }, [canvasScale, canvasX, canvasY, touchInitialDistance, zoom, handleTouchStart, handleTouchMove]);
 
   const [hasInit, setHasInit] = useState(false);
   useEffect(() => {
@@ -217,7 +218,7 @@ export default function EnginePipelines() {
     setCanvasX(containerRect.width / 2 - adjustX);
     setCanvasY(containerRect.height / 2 - adjustY);
     setHasInit(true);
-  }, [canvasControllerRef]);
+  }, [canvasControllerRef, canvasScale, hasInit]);
 
   const [blockOneInputRefs, setBlockOneInputRefs] = useState<any[]>([]);
   const [blockOneOutputRefs, setBlockOneOutputRefs] = useState<any[]>([]);
@@ -239,7 +240,7 @@ export default function EnginePipelines() {
   }, []);
 
   // Draw a line between blockOneOutputRef[0] and blockTwoInputRef[1]
-  const drawLine = (startRef: any, endRef: any) => {
+  const drawLine = useCallback((startRef: any, endRef: any) => {
     if (!startRef.current || !endRef.current) return;
     const startRect = startRef.current.getBoundingClientRect();
     const endRect = endRef.current.getBoundingClientRect();
@@ -279,12 +280,12 @@ export default function EnginePipelines() {
         line.parentNode.removeChild(line);
       }
     };
-  }
+  }, [canvasX, canvasY]);
   useEffect(() => {  
     if (!blockOneOutputRefs[0] || !blockTwoInputRefs[0]) return;
     if (!blockOneOutputRefs[0][0] || !blockTwoInputRefs[0][1]) return;
     drawLine(blockOneOutputRefs[0][0], blockTwoInputRefs[0][1]);
-  }, [blockOneInputRefs, blockOneOutputRefs, blockTwoInputRefs, blockTwoOutputRefs]);
+  }, [blockOneInputRefs, blockOneOutputRefs, blockTwoInputRefs, blockTwoOutputRefs, drawLine]);
   return (
     <div
       className="w-full h-full overflow-hidden relative flex flex-col items-center justify-center"

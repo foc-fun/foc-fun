@@ -48,7 +48,7 @@ const Build = () => {
                 <div className="text-4xl mb-4">💰</div>
                 <h3 className="text-xl mb-3">Low Cost</h3>
                 <p className="text-muted">
-                  Benefit from Starknet's efficient architecture. Lower gas fees mean more players can afford to play.
+                  Benefit from Starknet&apos;s efficient architecture. Lower gas fees mean more players can afford to play.
                 </p>
               </CardBody>
             </Card>
@@ -58,7 +58,7 @@ const Build = () => {
                 <div className="text-4xl mb-4">🔒</div>
                 <h3 className="text-xl mb-3">Secure & Trustless</h3>
                 <p className="text-muted">
-                  Built on Starknet's proven infrastructure. Your game logic is transparent and verifiable.
+                  Built on Starknet&apos;s proven infrastructure. Your game logic is transparent and verifiable.
                 </p>
               </CardBody>
             </Card>
@@ -169,7 +169,7 @@ const Build = () => {
                 <h3 className="text-2xl mb-3">art/peace</h3>
                 <p className="text-muted mb-4">
                   Collaborative pixel art game with 10,000+ daily active users. 
-                  Built in 2 weeks using foc.fun's rapid deployment tools.
+                  Built in 2 weeks using foc.fun&apos;s rapid deployment tools.
                 </p>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">

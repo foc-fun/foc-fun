@@ -9,10 +9,10 @@ interface ErrorBoundaryState {
 }
 
 export class ErrorBoundary extends React.Component<
-  React.PropsWithChildren<{}>,
+  React.PropsWithChildren<object>,
   ErrorBoundaryState
 > {
-  constructor(props: React.PropsWithChildren<{}>) {
+  constructor(props: React.PropsWithChildren<object>) {
     super(props);
     this.state = { hasError: false };
   }
@@ -34,8 +34,8 @@ export class ErrorBoundary extends React.Component<
               <div className="text-6xl mb-6">💥</div>
               <h1 className="text-3xl font-bold mb-4">Oops! Something went wrong</h1>
               <p className="text-muted mb-6">
-                We're sorry, but something unexpected happened. Our team has been notified 
-                and we're working to fix this issue.
+                We&apos;re sorry, but something unexpected happened. Our team has been notified 
+                and we&apos;re working to fix this issue.
               </p>
               
               {process.env.NODE_ENV === 'development' && this.state.error && (

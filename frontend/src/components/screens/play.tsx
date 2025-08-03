@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Card, CardMedia, CardBody, Badge, Button, LoadingCard } from '../ui';
 
