@@ -9,23 +9,27 @@ import { Header } from "../components/header/header";
 import Play from "../components/screens/play";
 import Engine from "../components/screens/engine";
 import Login from "../components/screens/login";
+import About from "../components/screens/about";
 
 const App = () => {
   return (
-    <div className="h-[100vh] w-[100vw] relative">
+    <div className="min-h-screen relative">
       {typeof window !== "undefined" && (
         <BrowserRouter>
           <Header/>
-          <Routes>
-            <Route path="/" element={<Play />} />
-            <Route path="/play" element={<Play />} />
-            <Route path="/engine" element={<Engine />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
+          <main className="relative z-10">
+            <Routes>
+              <Route path="/" element={<Play />} />
+              <Route path="/play" element={<Play />} />
+              <Route path="/engine" element={<Engine />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </main>
         </BrowserRouter>
       )}
       <div
-          className="fixed bottom-0 left-0 w-full"
+          className="fixed bottom-0 left-0 w-full pointer-events-none"
           style={{ zIndex: -2 }}
       >
           <Image
@@ -37,7 +41,7 @@ const App = () => {
           />
       </div>
       <div
-          className="fixed top-0 left-0 w-full bg-[#00000070] h-full"
+          className="fixed top-0 left-0 w-full h-full bg-black/40 pointer-events-none"
           style={{ zIndex: -1 }}
       />
     </div>
