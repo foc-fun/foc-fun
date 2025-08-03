@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { VT323 } from "next/font/google";
+import { VT323, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 
-const lightPixel7 = localFont({
-  src: [
-    {
-      path: "../../public/fonts/light-pixel-7/light_pixel-7.ttf",
-      weight: "400"
-    },
-    {
-      path: "../../public/fonts/light-pixel-7/light_pixel-7.ttf",
-      weight: "700"
-    }
-  ],
+const pressStart2P = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
   variable: "--font-pixels"
 });
 
@@ -36,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lightPixel7.variable} ${vt323.variable} font-sans antialiased`}
+        className={`${pressStart2P.variable} ${vt323.variable} font-sans antialiased`}
       >
         {children}
       </body>
