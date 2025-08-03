@@ -26,7 +26,7 @@ export const Header = () => {
 
   const navItems = [
     { path: '/play', label: 'Play', internal: true },
-    { path: 'https://docs.foc.fun', label: 'Build', internal: false },
+    { path: '/build', label: 'Build', internal: true },
     { path: '/about', label: 'About', internal: true }
   ];
 

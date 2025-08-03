@@ -1,8 +1,14 @@
 'use client';
 
 import Image from 'next/image';
+import { useState } from 'react';
+import { Card, CardMedia, CardBody, Badge, Button } from '../ui';
 
 const Play = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+
   const projects = [
       {
           "name": "art/peace",
@@ -117,55 +123,184 @@ const Play = () => {
       }
   ];
 
+  // Filter and search logic
+  const filteredProjects = projects.filter(project => {
+    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesGenre = selectedGenre === 'all' || project.genre === selectedGenre;
+    const matchesStatus = selectedStatus === 'all' || project.status === selectedStatus;
+    
+    return matchesSearch && matchesGenre && matchesStatus;
+  });
+
+  const genres = ['all', ...new Set(projects.map(p => p.genre))];
+  const statuses = ['all', ...new Set(projects.map(p => p.status))];
+
+  const getBadgeVariant = (status: string) => {
+    if (status === 'new') return 'new';
+    if (status.includes('sooner')) return 'warning';
+    if (status.includes('soon')) return 'primary';
+    return 'primary';
+  };
+
   return (
-    <div className="w-full flex flex-row justify-center mt-[12rem] pb-[4rem]">
-      <div className="grid grid-cols-1 gap-[2rem] sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => (
-              <div
-                key={index}
-                className="flex flex-col gap-2 p-0 rounded-lg transition-all duration-300 bg-[#00000000] w-[30rem]"
+    <div className="min-h-screen pt-20 pb-16">
+      <div className="container">
+        {/* Hero Section */}
+        <section className="text-center py-12 animate-fade-in">
+          <h1 className="text-5xl md:text-6xl mb-4">Play & Discover</h1>
+          <p className="text-xl text-muted max-w-3xl mx-auto mb-8">
+            Explore the future of blockchain gaming on Starknet. From art experiments to strategy games, 
+            discover unique experiences built by the community.
+          </p>
+          
+          {/* Search and Filters */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <input
+                type="text"
+                placeholder="Search games..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input flex-1"
+              />
+              <select 
+                value={selectedGenre}
+                onChange={(e) => setSelectedGenre(e.target.value)}
+                className="input sm:w-auto"
               >
-              <a
-                  href={project.url}
-                  style={{ width: "300px" }}
-                  className="drop-shadow-md hover:drop-shadow-xl shadow-black border-2 border-slate-900 rounded-lg hover:transform hover:scale-[1.03] transition-transform duration-200 bg-slate-900 relative"
+                {genres.map(genre => (
+                  <option key={genre} value={genre}>
+                    {genre === 'all' ? 'All Genres' : genre.charAt(0).toUpperCase() + genre.slice(1)}
+                  </option>
+                ))}
+              </select>
+              <select 
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="input sm:w-auto"
               >
-              <div
-                  style={{ display: `${project.status === "new" ? "block" : "none"}`, zIndex: 4 }}
-                  className="absolute top-[-10px] right-[-10px] p-1 pt-1.5 pl-1.5 text-[1.4rem] font-bold text-white bg-red-500 rounded-lg drop-shadow-lg animate-bounce"
-              >
-                  new!
-              </div>
-              <div className="relative w-full h-[20rem]">
-                  <video
-                      className="absolute w-full h-full object-cover rounded-lg"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      src={project.video}
-                  />
-                  <Image
-                      className="absolute w-full h-full object-cover rounded-lg"
-                      style={{ imageRendering: "pixelated" }}
+                {statuses.map(status => (
+                  <option key={status} value={status}>
+                    {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Games Grid */}
+        <section className="animate-fade-in">
+          {filteredProjects.length === 0 ? (
+            <div className="text-center py-12">
+              <h3 className="text-2xl mb-4">No games found</h3>
+              <p className="text-muted">Try adjusting your search or filters</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project, index) => (
+                <Card 
+                  key={index} 
+                  className="group cursor-pointer"
+                  onClick={() => window.open(project.url, '_blank')}
+                >
+                  <div className="relative">
+                    <CardMedia
                       src={project.image}
+                      videoSrc={project.video}
                       alt={project.name}
-                      layout="fill"
-                      objectFit="cover"
-                      objectPosition="center"
-                      unoptimized={true}
-                  />
-                  <div style={{ display: `${project.status.startsWith("coming") ? "block" : "none"}` }} className="absolute flex items-center justify-center bg-black bg-opacity-70 w-full h-full rounded-lg text-[4rem]">
-                      <p className="text-slate-250 text-center pt-[20%]">{project.status}</p>
+                      imageRendering="pixelated"
+                      overlay={
+                        project.status.startsWith("coming") ? (
+                          <div className="bg-black/70 inset-0 absolute flex items-center justify-center">
+                            <p className="text-white text-2xl text-center font-bold">
+                              {project.status}
+                            </p>
+                          </div>
+                        ) : null
+                      }
+                    />
+                    {project.status === 'new' && (
+                      <div className="absolute -top-2 -right-2 z-10">
+                        <Badge variant="new">new!</Badge>
+                      </div>
+                    )}
                   </div>
+                  
+                  <CardBody>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                        {project.name}
+                      </h3>
+                      <Badge variant={getBadgeVariant(project.status)}>
+                        {project.genre}
+                      </Badge>
+                    </div>
+                    <p className="text-muted mb-4">{project.description}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.tags.map((tag, tagIndex) => (
+                        <span 
+                          key={tagIndex}
+                          className="px-2 py-1 bg-gray-200/10 rounded text-xs"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      variant={project.status.startsWith("coming") ? "outline" : "primary"}
+                      size="sm"
+                      fullWidth
+                      disabled={project.status.startsWith("coming")}
+                    >
+                      {project.status.startsWith("coming") ? "Coming Soon" : "Play Now"}
+                    </Button>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Featured Section */}
+        <section className="py-12 mt-12 animate-fade-in">
+          <h2 className="text-4xl text-center mb-8">Featured Game</h2>
+          <div className="max-w-4xl mx-auto">
+            <Card className="overflow-hidden">
+              <div className="grid md:grid-cols-2 gap-0">
+                <CardMedia
+                  src="/art-peace/preview.png"
+                  videoSrc="/art-peace/preview.mp4"
+                  alt="art/peace"
+                  imageRendering="pixelated"
+                />
+                <CardBody className="flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-3xl font-bold">art/peace</h3>
+                    <Badge variant="new">featured</Badge>
+                  </div>
+                  <p className="text-muted mb-6">
+                    A groundbreaking collaborative art experiment where thousands of players 
+                    work together to create pixel art on a shared canvas. Every pixel placed 
+                    is recorded on the Starknet blockchain.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button 
+                      variant="primary"
+                      onClick={() => window.open('https://art-peace.net', '_blank')}
+                    >
+                      Play Now
+                    </Button>
+                    <Button variant="outline">Learn More</Button>
+                  </div>
+                </CardBody>
               </div>
-              </a>
-              <div className="flex flex-col gap-0 pl-2 text-slate-200">
-                  <h2 className="text-[2rem] font-bold">{project.name}</h2>
-                  <p className="text-[1.4rem] text-wrap">{project.description}</p>
-              </div>
-              </div>
-          ))}
+            </Card>
+          </div>
+        </section>
       </div>
     </div>
   );

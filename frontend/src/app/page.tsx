@@ -10,6 +10,7 @@ import Play from "../components/screens/play";
 import Engine from "../components/screens/engine";
 import Login from "../components/screens/login";
 import About from "../components/screens/about";
+import Build from "../components/screens/build";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Play />} />
               <Route path="/play" element={<Play />} />
+              <Route path="/build" element={<Build />} />
               <Route path="/engine" element={<Engine />} />
               <Route path="/about" element={<About />} />
               <Route path="/login" element={<Login />} />
