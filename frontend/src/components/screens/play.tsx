@@ -6,7 +6,7 @@ import { Card, CardMedia, CardBody, Badge, Button, LoadingCard } from '../ui';
 const Play = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -137,13 +137,22 @@ const Play = () => {
     const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGenre = selectedGenre === 'all' || project.genre === selectedGenre;
-    const matchesStatus = selectedStatus === 'all' || project.status === selectedStatus;
+    const matchesTags = selectedTags.length === 0 || 
+                       selectedTags.some(tag => project.tags.includes(tag));
     
-    return matchesSearch && matchesGenre && matchesStatus;
+    return matchesSearch && matchesGenre && matchesTags;
   });
 
   const genres = ['all', ...new Set(projects.map(p => p.genre))];
-  const statuses = ['all', ...new Set(projects.map(p => p.status))];
+  const allTags = Array.from(new Set(projects.flatMap(p => p.tags))).sort();
+  
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
 
   const getBadgeVariant = (status: string) => {
     if (status === 'new') return 'new';
@@ -165,36 +174,55 @@ const Play = () => {
           
           {/* Search and Filters */}
           <div className="max-w-4xl mx-auto mb-8 animate-slide-in-left animate-delay-300">
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <input
-                type="text"
-                placeholder="Search games..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input flex-1 hover-glow"
-              />
-              <select 
-                value={selectedGenre}
-                onChange={(e) => setSelectedGenre(e.target.value)}
-                className="input sm:w-auto hover-glow"
-              >
-                {genres.map(genre => (
-                  <option key={genre} value={genre}>
-                    {genre === 'all' ? 'All Genres' : genre.charAt(0).toUpperCase() + genre.slice(1)}
-                  </option>
-                ))}
-              </select>
-              <select 
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="input sm:w-auto hover-glow"
-              >
-                {statuses.map(status => (
-                  <option key={status} value={status}>
-                    {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
-                  </option>
-                ))}
-              </select>
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <input
+                  type="text"
+                  placeholder="Search games..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="input flex-1 hover-glow"
+                />
+                <select 
+                  value={selectedGenre}
+                  onChange={(e) => setSelectedGenre(e.target.value)}
+                  className="input sm:w-auto hover-glow"
+                >
+                  {genres.map(genre => (
+                    <option key={genre} value={genre}>
+                      {genre === 'all' ? 'All Genres' : genre.charAt(0).toUpperCase() + genre.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Tag Filters */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-pixel text-muted">Filter by tags:</label>
+                <div className="flex flex-wrap gap-2">
+                  {allTags.map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3 py-2 rounded-lg font-vt323 text-sm transition-all ${
+                        selectedTags.includes(tag)
+                          ? 'bg-primary text-white'
+                          : 'bg-gray-200/10 text-foreground hover:bg-gray-200/20'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                  {selectedTags.length > 0 && (
+                    <button
+                      onClick={() => setSelectedTags([])}
+                      className="px-3 py-2 rounded-lg font-vt323 text-sm bg-red-500/20 text-red-300 hover:bg-red-500/30 transition-all"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -226,14 +254,14 @@ const Play = () => {
               <p className="text-muted">Try adjusting your search or filters</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-visible">
               {filteredProjects.map((project, index) => (
                 <Card 
                   key={index} 
-                  className={`group cursor-pointer hover-lift animate-scale-in animate-delay-${Math.min(index * 100 + 100, 500)}`}
+                  className={`group cursor-pointer hover-lift animate-scale-in animate-delay-${Math.min(index * 100 + 100, 500)} overflow-visible`}
                   onClick={() => window.open(project.url, '_blank')}
                 >
-                  <div className="relative">
+                  <div className="relative overflow-visible">
                     <CardMedia
                       src={project.image}
                       videoSrc={project.video}
@@ -250,7 +278,7 @@ const Play = () => {
                       }
                     />
                     {project.status === 'new' && (
-                      <div className="absolute -top-2 -right-2 z-10">
+                      <div className="absolute -top-3 -right-3 z-10">
                         <Badge variant="new">new!</Badge>
                       </div>
                     )}
@@ -271,7 +299,7 @@ const Play = () => {
                       {project.tags.map((tag, tagIndex) => (
                         <span 
                           key={tagIndex}
-                          className="px-2 py-1 bg-gray-200/10 rounded text-xs"
+                          className="px-3 py-1.5 bg-gray-200/10 rounded text-sm font-vt323"
                         >
                           {tag}
                         </span>
