@@ -9,6 +9,8 @@ const Play = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [likedProjects, setLikedProjects] = useState<Set<string>>(new Set());
+  const [favoritedProjects, setFavoritedProjects] = useState<Set<string>>(new Set());
 
   // Simulate loading time for demo
   useEffect(() => {
@@ -30,6 +32,8 @@ const Play = () => {
           "status": "new",
           "playerCount": "12.5K",
           "rating": 4.8,
+          "likeCount": 2450,
+          "favoriteCount": 890,
       },
       {
           "name": "click.meme",
@@ -42,6 +46,8 @@ const Play = () => {
           "status": "coming sooner...",
           "playerCount": "8.2K",
           "rating": 4.2,
+          "likeCount": 1850,
+          "favoriteCount": 620,
       },
       {
           "name": "Chimera",
@@ -54,6 +60,8 @@ const Play = () => {
           "status": "coming sooner...",
           "playerCount": "4.7K",
           "rating": 4.5,
+          "likeCount": 1320,
+          "favoriteCount": 480,
       },
       {
           "name": "Cryptle",
@@ -66,6 +74,8 @@ const Play = () => {
           "status": "coming sooner...",
           "playerCount": "2.1K",
           "rating": 3.9,
+          "likeCount": 780,
+          "favoriteCount": 290,
       },
       {
           "name": "Puppet Pals",
@@ -78,6 +88,8 @@ const Play = () => {
           "status": "coming soon...",
           "playerCount": "1.8K",
           "rating": 4.1,
+          "likeCount": 650,
+          "favoriteCount": 210,
       },
       {
           // Sudoku, Crossword, Word Search, etc.
@@ -91,6 +103,8 @@ const Play = () => {
           "status": "coming soon...",
           "playerCount": "3.4K",
           "rating": 4.3,
+          "likeCount": 920,
+          "favoriteCount": 340,
       },
       {
           "name": "Foc Farm",
@@ -103,6 +117,8 @@ const Play = () => {
           "status": "coming soon...",
           "playerCount": "950",
           "rating": 3.7,
+          "likeCount": 380,
+          "favoriteCount": 120,
       },
       {
           "name": "War of the Pixels",
@@ -115,6 +131,8 @@ const Play = () => {
           "status": "coming later...",
           "playerCount": "650",
           "rating": 4.6,
+          "likeCount": 450,
+          "favoriteCount": 180,
       },
       {
           "name": "MC Economy",
@@ -127,6 +145,8 @@ const Play = () => {
           "status": "coming later...",
           "playerCount": "1.2K",
           "rating": 4.0,
+          "likeCount": 680,
+          "favoriteCount": 250,
       },
       {
           "name": "Gacha Go",
@@ -139,6 +159,8 @@ const Play = () => {
           "status": "coming later...",
           "playerCount": "520",
           "rating": 3.4,
+          "likeCount": 280,
+          "favoriteCount": 90,
       },
       {
           "name": "Foc Chat",
@@ -151,6 +173,8 @@ const Play = () => {
           "status": "coming later...",
           "playerCount": "780",
           "rating": 3.8,
+          "likeCount": 320,
+          "favoriteCount": 110,
       }
   ];
 
@@ -181,6 +205,39 @@ const Play = () => {
     if (status.includes('sooner')) return 'warning';
     if (status.includes('soon')) return 'primary';
     return 'primary';
+  };
+
+  const handleLike = (projectName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLikedProjects(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(projectName)) {
+        newSet.delete(projectName);
+      } else {
+        newSet.add(projectName);
+      }
+      return newSet;
+    });
+  };
+
+  const handleFavorite = (projectName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavoritedProjects(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(projectName)) {
+        newSet.delete(projectName);
+      } else {
+        newSet.add(projectName);
+      }
+      return newSet;
+    });
+  };
+
+  const formatCount = (count: number): string => {
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
   };
 
   const renderStarRating = (rating: number) => {
@@ -349,12 +406,46 @@ const Play = () => {
                   <CardBody>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">
-                          {project.name}
-                        </h3>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                            {project.name}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => handleLike(project.name, e)}
+                              className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-all hover:bg-gray-200/10 ${
+                                likedProjects.has(project.name) 
+                                  ? 'text-red-500' 
+                                  : 'text-gray-400 hover:text-red-400'
+                              }`}
+                            >
+                              <span className="text-lg">
+                                {likedProjects.has(project.name) ? '❤️' : '🤍'}
+                              </span>
+                              <span className="text-sm font-semibold">
+                                {formatCount(project.likeCount + (likedProjects.has(project.name) ? 1 : 0))}
+                              </span>
+                            </button>
+                            <button
+                              onClick={(e) => handleFavorite(project.name, e)}
+                              className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-all hover:bg-gray-200/10 ${
+                                favoritedProjects.has(project.name) 
+                                  ? 'text-yellow-500' 
+                                  : 'text-gray-400 hover:text-yellow-400'
+                              }`}
+                            >
+                              <span className="text-lg">
+                                {favoritedProjects.has(project.name) ? '⭐' : '☆'}
+                              </span>
+                              <span className="text-sm font-semibold">
+                                {formatCount(project.favoriteCount + (favoritedProjects.has(project.name) ? 1 : 0))}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
                         {renderStarRating(project.rating)}
                       </div>
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="flex flex-col items-end gap-1 ml-4">
                         <Badge variant={getBadgeVariant(project.status)}>
                           {project.genre}
                         </Badge>
