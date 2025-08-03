@@ -107,8 +107,14 @@ const Build = () => {
                 <div>
                   <h4 className="text-xl mb-2">Set Up Your Environment</h4>
                   <p className="text-muted mb-3">
-                    Install Scarb, Starknet Foundry, and clone our starter template.
+                    Install Foc Engine and clone the starter template.
                   </p>
+                  <div className="bg-gray-900/50 rounded-lg p-4 font-mono text-sm mb-3">
+                    <code>asdf plugin add foc-engine https://github.com/foc-fun/asdf-foc-engine.git</code>
+                  </div>
+                  <div className="bg-gray-900/50 rounded-lg p-4 font-mono text-sm mb-3">
+                    <code>asdf install foc-engine latest</code>
+                  </div>
                   <div className="bg-gray-900/50 rounded-lg p-4 font-mono text-sm">
                     <code>git clone https://github.com/foc-fun/game-template.git</code>
                   </div>
@@ -122,10 +128,10 @@ const Build = () => {
                 <div>
                   <h4 className="text-xl mb-2">Write Your Game Logic</h4>
                   <p className="text-muted mb-3">
-                    Create your smart contracts in Cairo. Use our pre-built components for common game mechanics.
+                    Edit contracts and game logic using Cairo. Create a custom frontend. And use the engine to run.
                   </p>
                   <div className="bg-gray-900/50 rounded-lg p-4 font-mono text-sm">
-                    <code>scarb build && scarb test</code>
+                    <code>foc-engine run</code>
                   </div>
                 </div>
               </div>
@@ -140,7 +146,7 @@ const Build = () => {
                     Register your contract with our platform and deploy to Starknet mainnet or testnet.
                   </p>
                   <div className="bg-gray-900/50 rounded-lg p-4 font-mono text-sm">
-                    <code>foc deploy --network testnet</code>
+                    <code>foc-engine deploy --network sepolia</code>
                   </div>
                 </div>
               </div>
@@ -210,7 +216,7 @@ const Build = () => {
               <Card className="text-center hover:scale-105 transition-transform">
                 <CardBody>
                   <div className="text-3xl mb-2">📚</div>
-                  <h4 className="font-bold">Documentation</h4>
+                  <h4 className="font-bold">Docs</h4>
                 </CardBody>
               </Card>
             </a>
@@ -219,7 +225,7 @@ const Build = () => {
               <Card className="text-center hover:scale-105 transition-transform">
                 <CardBody>
                   <div className="text-3xl mb-2">💻</div>
-                  <h4 className="font-bold">Code Examples</h4>
+                  <h4 className="font-bold">Examples</h4>
                 </CardBody>
               </Card>
             </a>
@@ -237,7 +243,7 @@ const Build = () => {
               <Card className="text-center hover:scale-105 transition-transform">
                 <CardBody>
                   <div className="text-3xl mb-2">🔌</div>
-                  <h4 className="font-bold">API Reference</h4>
+                  <h4 className="font-bold">API</h4>
                 </CardBody>
               </Card>
             </a>

@@ -61,34 +61,42 @@ const About = () => {
         {/* Key Features Section */}
         <section className="py-12 animate-fade-in">
           <h2 className="text-4xl text-center mb-8">Key Features</h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                <span className="text-3xl">🚀</span>
-                <div>
-                  <h4 className="text-xl mb-2">One-Click Deployment</h4>
-                  <p className="text-muted">Deploy your game contracts instantly without complex setup</p>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="flex items-start gap-4 p-6 bg-gray-50/5 rounded-lg border border-gray-200/10">
+                <div className="flex-shrink-0 mt-1">
+                  <span className="text-3xl">🚀</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xl mb-2 font-bold">One-Click Deployment</h4>
+                  <p className="text-muted text-base leading-relaxed">Deploy your game contracts instantly without complex setup</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <span className="text-3xl">📊</span>
-                <div>
-                  <h4 className="text-xl mb-2">Event Indexing</h4>
-                  <p className="text-muted">Automatic blockchain event tracking and processing</p>
+              <div className="flex items-start gap-4 p-6 bg-gray-50/5 rounded-lg border border-gray-200/10">
+                <div className="flex-shrink-0 mt-1">
+                  <span className="text-3xl">📊</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xl mb-2 font-bold">Event Indexing</h4>
+                  <p className="text-muted text-base leading-relaxed">Automatic blockchain event tracking and processing</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <span className="text-3xl">🎨</span>
-                <div>
-                  <h4 className="text-xl mb-2">No-Code Interface</h4>
-                  <p className="text-muted">Interact with smart contracts through an intuitive UI</p>
+              <div className="flex items-start gap-4 p-6 bg-gray-50/5 rounded-lg border border-gray-200/10">
+                <div className="flex-shrink-0 mt-1">
+                  <span className="text-3xl">🎨</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xl mb-2 font-bold">No-Code Interface</h4>
+                  <p className="text-muted text-base leading-relaxed">Interact with smart contracts through an intuitive UI</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <span className="text-3xl">💰</span>
-                <div>
-                  <h4 className="text-xl mb-2">Low Fees</h4>
-                  <p className="text-muted">Enjoy Starknet&apos;s efficient architecture for minimal transaction costs</p>
+              <div className="flex items-start gap-4 p-6 bg-gray-50/5 rounded-lg border border-gray-200/10">
+                <div className="flex-shrink-0 mt-1">
+                  <span className="text-3xl">💰</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xl mb-2 font-bold">Low Fees</h4>
+                  <p className="text-muted text-base leading-relaxed">Enjoy Starknet&apos;s efficient architecture for minimal transaction costs</p>
                 </div>
               </div>
             </div>
@@ -107,29 +115,29 @@ const About = () => {
                     <div className="flex gap-4">
                       <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold">Q1</div>
                       <div className="flex-1">
-                        <h4 className="text-xl mb-2">Platform Launch</h4>
-                        <p className="text-muted">Core gaming platform with initial game collection</p>
+                        <h4 className="text-xl mb-2 text-black">Platform Launch</h4>
+                        <p className="text-black">Core gaming platform with initial game collection</p>
                       </div>
                     </div>
                     <div className="flex gap-4">
                       <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-white font-bold">Q2</div>
                       <div className="flex-1">
-                        <h4 className="text-xl mb-2">Developer SDK</h4>
-                        <p className="text-muted">Complete toolkit for building games on foc.fun</p>
+                        <h4 className="text-xl mb-2 text-black">Developer SDK</h4>
+                        <p className="text-black">Complete toolkit for building games on foc.fun</p>
                       </div>
                     </div>
                     <div className="flex gap-4">
                       <div className="w-16 h-16 bg-tertiary rounded-full flex items-center justify-center text-white font-bold">Q3</div>
                       <div className="flex-1">
-                        <h4 className="text-xl mb-2">Mobile Support</h4>
-                        <p className="text-muted">Play your favorite games on mobile devices</p>
+                        <h4 className="text-xl mb-2 text-black">Mobile Support</h4>
+                        <p className="text-black">Play your favorite games on mobile devices</p>
                       </div>
                     </div>
                     <div className="flex gap-4">
                       <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold">Q4</div>
                       <div className="flex-1">
-                        <h4 className="text-xl mb-2">Tournaments & Rewards</h4>
-                        <p className="text-muted">Competitive gaming with on-chain rewards</p>
+                        <h4 className="text-xl mb-2 text-black">Tournaments & Rewards</h4>
+                        <p className="text-black">Competitive gaming with on-chain rewards</p>
                       </div>
                     </div>
                   </div>

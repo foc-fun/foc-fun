@@ -29,6 +29,7 @@ const Play = () => {
           "video": "/art-peace/preview.mp4",
           "status": "new",
           "playerCount": "12.5K",
+          "rating": 4.8,
       },
       {
           "name": "click.meme",
@@ -40,6 +41,7 @@ const Play = () => {
           "video": "/stonks/preview.mp4",
           "status": "coming sooner...",
           "playerCount": "8.2K",
+          "rating": 4.2,
       },
       {
           "name": "Chimera",
@@ -51,6 +53,7 @@ const Play = () => {
           "video": "/chimera/preview.mp4",
           "status": "coming sooner...",
           "playerCount": "4.7K",
+          "rating": 4.5,
       },
       {
           "name": "Cryptle",
@@ -62,6 +65,7 @@ const Play = () => {
           "video": "/cryptle/preview.mp4",
           "status": "coming sooner...",
           "playerCount": "2.1K",
+          "rating": 3.9,
       },
       {
           "name": "Puppet Pals",
@@ -73,6 +77,7 @@ const Play = () => {
           "video": "/default/preview.mp4",
           "status": "coming soon...",
           "playerCount": "1.8K",
+          "rating": 4.1,
       },
       {
           // Sudoku, Crossword, Word Search, etc.
@@ -85,6 +90,7 @@ const Play = () => {
           "video": "/daily-paper/preview.mp4",
           "status": "coming soon...",
           "playerCount": "3.4K",
+          "rating": 4.3,
       },
       {
           "name": "Foc Farm",
@@ -96,6 +102,7 @@ const Play = () => {
           "video": "/default/preview.mp4",
           "status": "coming soon...",
           "playerCount": "950",
+          "rating": 3.7,
       },
       {
           "name": "War of the Pixels",
@@ -107,6 +114,7 @@ const Play = () => {
           "video": "/default/preview.mp4",
           "status": "coming later...",
           "playerCount": "650",
+          "rating": 4.6,
       },
       {
           "name": "MC Economy",
@@ -118,6 +126,7 @@ const Play = () => {
           "video": "/default/preview.mp4",
           "status": "coming later...",
           "playerCount": "1.2K",
+          "rating": 4.0,
       },
       {
           "name": "Gacha Go",
@@ -129,6 +138,7 @@ const Play = () => {
           "video": "/default/preview.mp4",
           "status": "coming later...",
           "playerCount": "520",
+          "rating": 3.4,
       },
       {
           "name": "Foc Chat",
@@ -140,6 +150,7 @@ const Play = () => {
           "video": "/default/preview.mp4",
           "status": "coming later...",
           "playerCount": "780",
+          "rating": 3.8,
       }
   ];
 
@@ -170,6 +181,46 @@ const Play = () => {
     if (status.includes('sooner')) return 'warning';
     if (status.includes('soon')) return 'primary';
     return 'primary';
+  };
+
+  const renderStarRating = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    // Full stars
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <span key={i} className="text-yellow-400 text-lg">★</span>
+      );
+    }
+    
+    // Half star
+    if (hasHalfStar) {
+      stars.push(
+        <span key="half" className="text-yellow-400 text-lg relative inline-block">
+          <span className="absolute inset-0 overflow-hidden w-1/2">★</span>
+          <span className="text-gray-300">★</span>
+        </span>
+      );
+    }
+    
+    // Empty stars
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(
+        <span key={`empty-${i}`} className="text-gray-300 text-lg">★</span>
+      );
+    }
+    
+    return (
+      <div className="flex items-center gap-2">
+        <div className="flex items-center">
+          {stars}
+        </div>
+        <span className="text-sm text-muted font-semibold">{rating.toFixed(1)}</span>
+      </div>
+    );
   };
 
   return (
@@ -297,9 +348,12 @@ const Play = () => {
                   
                   <CardBody>
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
-                        {project.name}
-                      </h3>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">
+                          {project.name}
+                        </h3>
+                        {renderStarRating(project.rating)}
+                      </div>
                       <div className="flex flex-col items-end gap-1">
                         <Badge variant={getBadgeVariant(project.status)}>
                           {project.genre}
