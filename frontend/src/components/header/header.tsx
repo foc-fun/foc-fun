@@ -38,7 +38,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-background/80 backdrop-blur-md border-b border-gray-200/10 z-50">
+    <header className="fixed top-0 left-0 w-full bg-white/5 backdrop-blur-md border-b border-gray-200/10 z-50">
       <div className="container">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
@@ -57,59 +57,61 @@ export const Header = () => {
             </NavLink>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2">
-            {navItems.map((item) => (
-              item.internal ? (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={`px-4 py-2 rounded-lg font-pixel text-sm transition-all ${
-                    isActiveRoute(item.path)
-                      ? 'bg-primary text-white'
-                      : 'text-foreground hover:bg-gray-100/10'
-                  }`}
-                >
-                  {item.label}
-                </NavLink>
-              ) : (
-                <a
-                  key={item.path}
-                  href={item.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-lg font-pixel text-sm text-foreground hover:bg-gray-100/10 transition-all flex items-center gap-1"
-                >
-                  {item.label}
-                  <span className="text-xs">↗</span>
-                </a>
-              )
-            ))}
-          </nav>
+          {/* Desktop Navigation + Auth */}
+          <div className="hidden md:flex items-center gap-6">
+            <nav className="flex items-center gap-2">
+              {navItems.map((item) => (
+                item.internal ? (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={`px-4 py-2 rounded-lg font-pixel text-sm transition-all ${
+                      isActiveRoute(item.path)
+                        ? 'bg-primary text-white'
+                        : 'text-foreground hover:bg-gray-100/10'
+                    }`}
+                  >
+                    {item.label}
+                  </NavLink>
+                ) : (
+                  <a
+                    key={item.path}
+                    href={item.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-lg font-pixel text-sm text-foreground hover:bg-gray-100/10 transition-all flex items-center gap-1"
+                  >
+                    {item.label}
+                    <span className="text-xs">↗</span>
+                  </a>
+                )
+              ))}
+            </nav>
 
-          {/* Desktop Auth */}
-          <div className="hidden md:flex items-center gap-3">
-            {address ? (
-              <>
-                <Button variant="ghost" size="sm">
-                  {username}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => disconnect()}
-                  className="btn-icon"
-                >
-                  <span className="text-lg">⏻</span>
-                </Button>
-              </>
-            ) : (
-              <NavLink to="/login">
-                <Button variant="primary" size="sm">
-                  Login
-                </Button>
-              </NavLink>
-            )}
+            {/* Auth */}
+            <div className="flex items-center gap-3">
+              {address ? (
+                <>
+                  <Button variant="ghost" size="sm">
+                    {username}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => disconnect()}
+                    className="btn-icon"
+                  >
+                    <span className="text-lg">⏻</span>
+                  </Button>
+                </>
+              ) : (
+                <NavLink to="/login">
+                  <Button variant="primary" size="sm">
+                    Login
+                  </Button>
+                </NavLink>
+              )}
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -127,7 +129,7 @@ export const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-md border-b border-gray-200/10 animate-fade-in">
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-white/5 backdrop-blur-md border-b border-gray-200/10 animate-fade-in">
             <nav className="flex flex-col p-4 gap-2">
               {navItems.map((item) => (
                 item.internal ? (

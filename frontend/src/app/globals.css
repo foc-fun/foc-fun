@@ -120,6 +120,7 @@
 /* Typography scale */
 :root {
   --font-pixel: 'Light-Pixel', monospace;
+  --font-vt323: var(--font-vt323), monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   
   --text-xs: 1.2rem;
@@ -151,7 +152,7 @@ html {
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-vt323);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
@@ -189,9 +190,9 @@ h4 { font-size: var(--text-2xl); }
 h5 { font-size: var(--text-xl); }
 h6 { font-size: var(--text-lg); }
 
-/* Body text uses sans-serif for readability */
+/* Body text uses VT323 pixelated font */
 p, span, div, li, a {
-  font-family: var(--font-sans);
+  font-family: var(--font-vt323);
 }
 
 /* Links */
@@ -730,6 +731,7 @@ select option {
 .font-semibold { font-weight: var(--font-semibold); }
 .font-medium { font-weight: var(--font-medium); }
 .font-pixel { font-family: var(--font-pixel); }
+.font-vt323 { font-family: var(--font-vt323); }
 .font-mono { font-family: monospace; }
 
 /* Animation utilities */

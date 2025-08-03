@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { VT323 } from "next/font/google";
 import "./globals.css";
 
 const lightPixel7 = localFont({
@@ -16,6 +17,12 @@ const lightPixel7 = localFont({
   variable: "--font-pixels"
 });
 
+const vt323 = VT323({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-vt323"
+});
+
 export const metadata: Metadata = {
   title: "foc.fun",
   description: "Starknet App Engine"
@@ -29,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lightPixel7.variable} font-sans antialiased`}
+        className={`${lightPixel7.variable} ${vt323.variable} font-sans antialiased`}
       >
         {children}
       </body>

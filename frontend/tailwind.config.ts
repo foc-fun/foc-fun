@@ -14,6 +14,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-pixels)"],
+        pixel: ["var(--font-pixels)"],
+        vt323: ["var(--font-vt323)"],
       },
       backgroundImage: {
         'main': "url('/background/main.png')",
