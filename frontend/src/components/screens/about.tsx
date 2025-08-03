@@ -8,8 +8,8 @@ const About = () => {
       <div className="container">
         {/* Hero Section */}
         <section className="text-center py-16">
-          <h1 className="text-5xl md:text-6xl mb-4 animate-bounce-in">The Starknet App Engine</h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto animate-fade-in-up animate-delay-300">
+          <h1 className="text-5xl md:text-6xl mb-4 animate-fade-in">The Starknet App Engine</h1>
+          <p className="text-xl text-muted max-w-3xl mx-auto animate-fade-in animate-delay-200">
             foc.fun is a platform for deploying and managing smart contracts on Starknet, 
             making blockchain gaming accessible to everyone.
           </p>
@@ -19,7 +19,7 @@ const About = () => {
         <section className="py-12 animate-fade-in">
           <h2 className="text-4xl text-center mb-8">What is foc.fun?</h2>
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="card hover-lift animate-slide-in-left">
+            <div className="card hover-lift animate-fade-in">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">🎮 Gaming Platform</h3>
                 <p className="text-muted">
@@ -28,7 +28,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="card hover-lift animate-slide-in-right">
+            <div className="card hover-lift animate-fade-in animate-delay-100">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">🔧 Developer Tools</h3>
                 <p className="text-muted">
@@ -37,7 +37,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="card hover-lift animate-slide-in-left animate-delay-200">
+            <div className="card hover-lift animate-fade-in animate-delay-200">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">⚡ Powered by Starknet</h3>
                 <p className="text-muted">
@@ -46,7 +46,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="card hover-lift animate-slide-in-right animate-delay-200">
+            <div className="card hover-lift animate-fade-in animate-delay-300">
               <div className="card-body">
                 <h3 className="text-2xl mb-4">👥 Community Driven</h3>
                 <p className="text-muted">
@@ -99,35 +99,39 @@ const About = () => {
         <section className="py-12 animate-fade-in">
           <h2 className="text-4xl text-center mb-8">What&apos;s Coming</h2>
           <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"></div>
-              <div className="space-y-8">
-                <div className="flex gap-4">
-                  <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold">Q1</div>
-                  <div className="flex-1">
-                    <h4 className="text-xl mb-2">Platform Launch</h4>
-                    <p className="text-muted">Core gaming platform with initial game collection</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-white font-bold">Q2</div>
-                  <div className="flex-1">
-                    <h4 className="text-xl mb-2">Developer SDK</h4>
-                    <p className="text-muted">Complete toolkit for building games on foc.fun</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="w-16 h-16 bg-tertiary rounded-full flex items-center justify-center text-white font-bold">Q3</div>
-                  <div className="flex-1">
-                    <h4 className="text-xl mb-2">Mobile Support</h4>
-                    <p className="text-muted">Play your favorite games on mobile devices</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold">Q4</div>
-                  <div className="flex-1">
-                    <h4 className="text-xl mb-2">Tournaments & Rewards</h4>
-                    <p className="text-muted">Competitive gaming with on-chain rewards</p>
+            <div className="card">
+              <div className="card-body">
+                <div className="relative">
+                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"></div>
+                  <div className="space-y-8">
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold">Q1</div>
+                      <div className="flex-1">
+                        <h4 className="text-xl mb-2">Platform Launch</h4>
+                        <p className="text-muted">Core gaming platform with initial game collection</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-white font-bold">Q2</div>
+                      <div className="flex-1">
+                        <h4 className="text-xl mb-2">Developer SDK</h4>
+                        <p className="text-muted">Complete toolkit for building games on foc.fun</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 bg-tertiary rounded-full flex items-center justify-center text-white font-bold">Q3</div>
+                      <div className="flex-1">
+                        <h4 className="text-xl mb-2">Mobile Support</h4>
+                        <p className="text-muted">Play your favorite games on mobile devices</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold">Q4</div>
+                      <div className="flex-1">
+                        <h4 className="text-xl mb-2">Tournaments & Rewards</h4>
+                        <p className="text-muted">Competitive gaming with on-chain rewards</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

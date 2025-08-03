@@ -24,29 +24,35 @@ const Login = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-row justify-center items-center bg-[#000000d0]">
-      <div className="w-[40rem] flex flex-col text-center pb-[1rem]
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 pt-20 pb-16">
+      <div className="w-full max-w-md flex flex-col text-center p-8
         Background--light rounded-xl shadow-xl font-bold
         border-2 border-[#ffffff] border-opacity-20
       ">
-        <h1 className="text-[3.4rem] py-[2rem] mb-[1rem] text-black">Login!</h1>
-        <button
-          className="Button__primary pt-[1rem] pb-[0.5rem] mx-[4rem] mb-[1rem]"
-          onClick={tryConnectController}
-        >
-          <p className="text-[1.6rem]">Controller</p>
-          <p className="text-[1rem] text-[var(--secondary-dark)]">No fees + Sessions!</p>
-        </button>
-        {connectors.slice(1).map((connector: any) => (
+        <h1 className="text-4xl mb-8 text-black">Login!</h1>
+        <div className="space-y-4">
           <button
-            key={connector.name}
-            onClick={() => tryConnectWallet(connector)}
-            className="Button__primary pt-[1rem] pb-[0.5rem] mx-[4rem] mb-[1rem]"
+            className="Button__primary w-full py-4 px-6"
+            onClick={tryConnectController}
           >
-            <p className="text-[1.6rem]">{connector.name}</p>
-            <p className="text-[1rem] text-[var(--tertiary-dark)]">Standard</p>
+            <div className="flex flex-col items-center">
+              <p className="text-xl font-bold">Controller</p>
+              <p className="text-sm text-[var(--secondary-dark)] mt-1">No fees + Sessions!</p>
+            </div>
           </button>
-        ))}
+          {connectors.slice(1).map((connector: any) => (
+            <button
+              key={connector.name}
+              onClick={() => tryConnectWallet(connector)}
+              className="Button__primary w-full py-4 px-6"
+            >
+              <div className="flex flex-col items-center">
+                <p className="text-xl font-bold">{connector.name}</p>
+                <p className="text-sm text-[var(--tertiary-dark)] mt-1">Standard</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

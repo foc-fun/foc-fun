@@ -28,6 +28,7 @@ const Play = () => {
           "image": "/art-peace/preview.png",
           "video": "/art-peace/preview.mp4",
           "status": "new",
+          "playerCount": "12.5K",
       },
       {
           "name": "click.meme",
@@ -38,6 +39,7 @@ const Play = () => {
           "image": "/stonks/preview.png",
           "video": "/stonks/preview.mp4",
           "status": "coming sooner...",
+          "playerCount": "8.2K",
       },
       {
           "name": "Chimera",
@@ -48,6 +50,7 @@ const Play = () => {
           "image": "/chimera/preview.png",
           "video": "/chimera/preview.mp4",
           "status": "coming sooner...",
+          "playerCount": "4.7K",
       },
       {
           "name": "Cryptle",
@@ -58,6 +61,7 @@ const Play = () => {
           "image": "/cryptle/preview.png",
           "video": "/cryptle/preview.mp4",
           "status": "coming sooner...",
+          "playerCount": "2.1K",
       },
       {
           "name": "Puppet Pals",
@@ -68,6 +72,7 @@ const Play = () => {
           "image": "/default/preview.png",
           "video": "/default/preview.mp4",
           "status": "coming soon...",
+          "playerCount": "1.8K",
       },
       {
           // Sudoku, Crossword, Word Search, etc.
@@ -79,6 +84,7 @@ const Play = () => {
           "image": "/daily-paper/preview.png",
           "video": "/daily-paper/preview.mp4",
           "status": "coming soon...",
+          "playerCount": "3.4K",
       },
       {
           "name": "Foc Farm",
@@ -89,6 +95,7 @@ const Play = () => {
           "image": "/default/preview.png",
           "video": "/default/preview.mp4",
           "status": "coming soon...",
+          "playerCount": "950",
       },
       {
           "name": "War of the Pixels",
@@ -99,6 +106,7 @@ const Play = () => {
           "image": "/default/preview.png",
           "video": "/default/preview.mp4",
           "status": "coming later...",
+          "playerCount": "650",
       },
       {
           "name": "MC Economy",
@@ -109,6 +117,7 @@ const Play = () => {
           "image": "/default/preview.png",
           "video": "/default/preview.mp4",
           "status": "coming later...",
+          "playerCount": "1.2K",
       },
       {
           "name": "Gacha Go",
@@ -119,6 +128,7 @@ const Play = () => {
           "image": "/default/preview.png",
           "video": "/default/preview.mp4",
           "status": "coming later...",
+          "playerCount": "520",
       },
       {
           "name": "Foc Chat",
@@ -129,6 +139,7 @@ const Play = () => {
           "image": "/default/preview.png",
           "video": "/default/preview.mp4",
           "status": "coming later...",
+          "playerCount": "780",
       }
   ];
 
@@ -289,9 +300,15 @@ const Play = () => {
                       <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
                         {project.name}
                       </h3>
-                      <Badge variant={getBadgeVariant(project.status)}>
-                        {project.genre}
-                      </Badge>
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge variant={getBadgeVariant(project.status)}>
+                          {project.genre}
+                        </Badge>
+                        <div className="flex items-center gap-1 text-sm text-muted">
+                          <span>👥</span>
+                          <span>{project.playerCount}</span>
+                        </div>
+                      </div>
                     </div>
                     <p className="text-muted mb-4">{project.description}</p>
                     
@@ -327,12 +344,14 @@ const Play = () => {
           <div className="max-w-4xl mx-auto">
             <Card className="overflow-hidden">
               <div className="grid md:grid-cols-2 gap-0">
-                <CardMedia
-                  src="/art-peace/preview.png"
-                  videoSrc="/art-peace/preview.mp4"
-                  alt="art/peace"
-                  imageRendering="pixelated"
-                />
+                <div className="relative w-full aspect-square md:aspect-auto md:h-full flex items-center justify-center overflow-hidden rounded-xl md:rounded-none md:rounded-l-xl">
+                  <CardMedia
+                    src="/art-peace/preview.png"
+                    videoSrc="/art-peace/preview.mp4"
+                    alt="art/peace"
+                    imageRendering="pixelated"
+                  />
+                </div>
                 <CardBody className="flex flex-col justify-center">
                   <div className="flex items-center gap-2 mb-4">
                     <h3 className="text-3xl font-bold">art/peace</h3>
